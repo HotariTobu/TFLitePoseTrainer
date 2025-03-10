@@ -9,4 +9,8 @@
     <Platform>x64</Platform>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="K4AdotNet" Version="1.4.17" />
+  </ItemGroup>
+
 </Project>
