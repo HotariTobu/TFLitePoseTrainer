@@ -1,4 +1,10 @@
 {
+    "cSpell.words": [
+        "bgra",
+        "k4adotnet",
+        "unbinned",
+    ],
+
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
