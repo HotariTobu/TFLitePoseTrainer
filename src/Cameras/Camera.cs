@@ -1,6 +1,6 @@
 using K4AdotNet.Sensor;
 
-namespace TFLitePoseTrainer;
+namespace TFLitePoseTrainer.Cameras;
 
 internal class Camera(int index) : IDisposable
 {

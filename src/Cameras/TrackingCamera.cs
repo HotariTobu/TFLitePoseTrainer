@@ -1,6 +1,6 @@
 using K4AdotNet.BodyTracking;
 
-namespace TFLitePoseTrainer;
+namespace TFLitePoseTrainer.Cameras;
 
 internal class TrackingCamera(int index) : Camera(index)
 {
