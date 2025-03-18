@@ -4,6 +4,32 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TFLitePoseTrainer"
+        xmlns:local.ds="clr-namespace:TFLitePoseTrainer.DataSources"
         mc:Ignorable="d"
-        Title="TFLitePoseTrainer" Height="500" Width="800">
+        Title="TFLitePoseTrainer"
+        Height="500"
+        Width="800">
+    <Window.Resources>
+        <ResourceDictionary Source="../Styles.xaml"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <local.ds:MainDataSource/>
+    </Window.DataContext>
+
+    <ScrollViewer>
+        <StackPanel>
+            <!-- <TextBlock>
+                1. Record poses
+            </TextBlock> -->
+            <Image Source="{Binding CaptureImage}"
+                   Stretch="Uniform"/>
+            <TextBlock Style="{StaticResource HeaderStyle}">
+                2. Select poses
+            </TextBlock>
+
+            <TextBlock>
+                3. Train a model
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
 </Window>
