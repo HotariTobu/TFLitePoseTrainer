@@ -38,26 +38,46 @@ internal class Camera(int index) : IDisposable
         _device.Dispose();
     }
 
-    public virtual void Start()
+    public virtual bool Start()
     {
         if (IsStarted)
         {
-            return;
+            return false;
         }
-        IsStarted = true;
 
-        _device.StartCameras(DeviceConfig);
+        try
+        {
+            _device.StartCameras(DeviceConfig);
+            IsStarted = true;
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Failed to start cameras: {e}");
+            return false;
+        }
+
+        return true;
     }
 
-    public virtual void Stop()
+    public virtual bool Stop()
     {
         if (IsStopped)
         {
-            return;
+            return false;
         }
-        IsStopped = true;
 
-        _device.StopCameras();
+        try
+        {
+            _device.StopCameras();
+            IsStopped = true;
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Failed to stop cameras: {e}");
+            return false;
+        }
+        
+        return true;
     }
 
 

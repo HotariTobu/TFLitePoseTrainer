@@ -9,6 +9,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using TFLitePoseTrainer.DataSources;
+
 namespace TFLitePoseTrainer.Windows;
 
 /// <summary>
@@ -16,8 +18,15 @@ namespace TFLitePoseTrainer.Windows;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private readonly MainDataSource _dataSource;
+
     public MainWindow()
     {
         InitializeComponent();
+        _dataSource = (MainDataSource)DataContext;
+
+        _dataSource.Poses.Add(new() { Data = new(""), Label = "Pose 1"});
+        _dataSource.Poses.Add(new() { Data = new(""), Label = "Pose 2"});
+        _dataSource.Poses.Add(new() { Data = new(""), Label = "Pose 3"});
     }
 }

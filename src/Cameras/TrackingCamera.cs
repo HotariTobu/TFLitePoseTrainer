@@ -26,31 +26,57 @@ internal class TrackingCamera(int index) : Camera(index)
         base.Dispose();
     }
 
-    public override void Start()
+    public override bool Start()
     {
-        base.Start();
+        if (!base.Start())
+        {
+            return false;
+        }
 
         if (_tracker is not null)
         {
-            return;
+            return false;
         }
 
-        _device.GetCalibration(DeviceConfig.DepthMode, DeviceConfig.ColorResolution, out var calibration);
-        _tracker = new(calibration, TrackerConfig);
+        try
+        {
+            _device.GetCalibration(DeviceConfig.DepthMode, DeviceConfig.ColorResolution, out var calibration);
+            _tracker = new(calibration, TrackerConfig);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Failed to create tracker: {e}");
+            return false;
+        }
+
+        return true;
     }
 
-    public override void Stop()
+    public override bool Stop()
     {
-        base.Stop();
+        if (!base.Stop())
+        {
+            return false;
+        }
 
         if (_tracker is null)
         {
-            return;
+            return false;
         }
 
-        _tracker.Shutdown();
-        _tracker.Dispose();
-        _tracker = null;
+        try
+        {
+            _tracker.Shutdown();
+            _tracker.Dispose();
+            _tracker = null;
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Failed to shutdown tracker: {e}");
+            return false;
+        }
+
+        return true;
     }
 
     public override async Task<bool> Update()

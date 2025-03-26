@@ -4,16 +4,52 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TFLitePoseTrainer"
-        xmlns:local.ds="clr-namespace:TFLitePoseTrainer.DataSources"
+        xmlns:local_ds="clr-namespace:TFLitePoseTrainer.DataSources"
+        xmlns:local_cv="clr-namespace:TFLitePoseTrainer.Converters"
         mc:Ignorable="d"
         Title="TFLitePoseTrainer"
         Height="500"
         Width="800">
     <Window.Resources>
-        <ResourceDictionary Source="../Styles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="posesControlStyle" TargetType="ItemsControl">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style>
+                            <Setter Property="Control.Width" Value="200"/>
+                            <Setter Property="Control.Height" Value="130"/>
+                            <!-- <Setter Property="Padding" Value="0"/> -->
+                            <Setter Property="Control.Margin" Value="5"/>
+                            <!-- <Style.Triggers>
+                            </Style.Triggers> -->
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
     <Window.DataContext>
-        <local.ds:MainDataSource/>
+        <local_ds:MainDataSource/>
     </Window.DataContext>
 
     <ScrollViewer>
@@ -23,9 +59,98 @@
             </TextBlock> -->
             <Image Source="{Binding CaptureImage}"
                    Stretch="Uniform"/>
-            <TextBlock Style="{StaticResource HeaderStyle}">
-                2. Select poses
-            </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Style="{StaticResource HeaderStyle}">
+                    2. Select poses
+                </TextBlock>
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            FlowDirection="RightToLeft"
+                            VerticalAlignment="Bottom">
+                    <ToggleButton Content="✏️"
+                                  IsChecked="{Binding IsEditing, Mode=TwoWay}"/>
+                </StackPanel>
+            </Grid>
+
+            <!--
+                記録されたポーズの一覧を表示する。
+                最初の要素は新たなポーズを記録するためのボタン。
+            -->
+            <ListBox Style="{StaticResource posesControlStyle}"
+                     ItemsSource="{Binding Poses}"
+                     SelectionMode="Multiple">
+                <ListBox.Visibility>
+                    <Binding Path="IsEditing">
+                        <Binding.Converter>
+                            <local_cv:ChainConverter>
+                                <local_cv:ChainConverter.Converters>
+                                    <local_cv:BooleanInverterConverter/>
+                                    <BooleanToVisibilityConverter/>
+                                </local_cv:ChainConverter.Converters>
+                            </local_cv:ChainConverter>
+                        </Binding.Converter>
+                    </Binding>
+                </ListBox.Visibility>
+                
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <!-- <CheckBox Name="selectionCheckBox"
+                                      IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
+                                      IsHitTestVisible="False"/> -->
+                            <Image Grid.Row="0"/>
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding Label}"
+                                       HorizontalAlignment="Center"
+                                       Padding="1"/>
+                        </Grid>
+
+                        <!-- <DataTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="False">
+                                <Setter TargetName="selectionCheckBox" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </DataTemplate.Triggers> -->
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ItemsControl Style="{StaticResource posesControlStyle}"
+                     ItemsSource="{Binding Poses}">
+                <ItemsControl.Visibility>
+                    <Binding Path="IsEditing">
+                        <Binding.Converter>
+                            <BooleanToVisibilityConverter/>
+                        </Binding.Converter>
+                    </Binding>
+                </ItemsControl.Visibility>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="5,2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Image Grid.Row="0"/>
+                            <Canvas Grid.Row="0">
+                                <Button Canvas.Right="2" Canvas.Top="2" Content="❌"/>
+                            </Canvas>
+                            <TextBox Grid.Row="1"
+                                     Text="{Binding Label, Mode=TwoWay}"
+                                       HorizontalAlignment="Center"
+                                     MaxLength="16"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <TextBlock>
                 3. Train a model

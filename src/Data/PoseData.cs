@@ -2,7 +2,8 @@ namespace TFLitePoseTrainer.Data;
 
 public record PoseData(
     string Id,
-    string Label,
     DateTime CreatedAt
 )
-{ }
+{
+    public PoseData(string id) : this(id, DateTime.Now) { }
+}

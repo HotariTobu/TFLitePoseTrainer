@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace TFLitePoseTrainer.DataSources;
@@ -45,13 +47,27 @@ internal class MainDataSource : SharedWPF.ViewModelBase
 
     #endregion
 
-    #region == PoseItems ==
+    #region == Poses ==
 
+    public ObservableCollection<PoseItem> Poses { get; } = [];
 
     #endregion
 
-    public class PoseItem
-    {
+    #region == IsEditing ==
 
+    private bool _isEditing;
+    public bool IsEditing
+    {
+        get => _isEditing;
+        set
+        {
+            if (_isEditing != value)
+            {
+                _isEditing = value;
+                RaisePropertyChanged(nameof(IsEditing));
+            }
+        }
     }
+
+    #endregion
 }
