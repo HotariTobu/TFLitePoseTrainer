@@ -9,21 +9,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using TFLitePoseTrainer.DataSources;
+namespace TFLitePoseTrainer.Main;
 
-namespace TFLitePoseTrainer.Windows;
-
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
+public partial class Window : System.Windows.Window
 {
-    private readonly MainDataSource _dataSource;
+    private readonly DataSource _dataSource;
 
-    public MainWindow()
+    public Window()
     {
         InitializeComponent();
-        _dataSource = (MainDataSource)DataContext;
+        _dataSource = (DataSource)DataContext;
 
         _dataSource.Poses.Add(new() { Data = new(""), Label = "Pose 1"});
         _dataSource.Poses.Add(new() { Data = new(""), Label = "Pose 2"});

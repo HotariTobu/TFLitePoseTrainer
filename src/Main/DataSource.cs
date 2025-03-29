@@ -8,9 +8,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace TFLitePoseTrainer.DataSources;
+namespace TFLitePoseTrainer.Main;
 
-internal class MainDataSource : SharedWPF.ViewModelBase
+internal class DataSource : SharedWPF.ViewModelBase
 {
     #region == CaptureImage ==
 

@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace TFLitePoseTrainer.DataSources;
+namespace TFLitePoseTrainer.Main;
 
 public class PoseItem : SharedWPF.ViewModelBase, ISerializable
 {
