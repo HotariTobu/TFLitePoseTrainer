@@ -6,9 +6,7 @@
         xmlns:local_main="clr-namespace:TFLitePoseTrainer.Main"
         xmlns:local_cv="clr-namespace:TFLitePoseTrainer.Converters"
         mc:Ignorable="d"
-        Title="TFLitePoseTrainer"
-        Height="500"
-        Width="800">
+        Title="TFLitePoseTrainer" Width="800" Height="500">
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml"/>
     </Window.Resources>
@@ -18,11 +16,6 @@
 
     <ScrollViewer>
         <StackPanel>
-            <!-- <TextBlock>
-                1. Record poses
-            </TextBlock> -->
-            <Image Source="{Binding CaptureImage}"
-                   Stretch="Uniform"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -34,8 +27,10 @@
                 </TextBlock>
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
-                            FlowDirection="RightToLeft"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Bottom">
+                    <Button Content="➕"
+                            Click="OnAddPoseButtonClicked"/>
                     <ToggleButton Content="✏️"
                                   IsChecked="{Binding IsEditing, Mode=TwoWay}"/>
                 </StackPanel>
