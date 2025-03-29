@@ -14,8 +14,8 @@ namespace TFLitePoseTrainer.Main;
 
 public partial class Window : System.Windows.Window
 {
-    private readonly static string s_poseLabelFormat = "Pose {0}";
-    private readonly static Regex s_poseLabelRegex = new(@"Pose (\d+)");
+    private readonly static string PoseLabelFormat = "Pose {0}";
+    private readonly static Regex PoseLabelRegex = new(@"Pose (\d+)");
 
     private readonly DataSource _dataSource;
     private readonly Record.Window _recordWindow;
@@ -45,24 +45,26 @@ public partial class Window : System.Windows.Window
 
     private void OnPoseRecorded(Data.PoseData poseData)
     {
-        _dataSource.Poses.Add(new() {
-            Data = poseData,
-            Label =  GetNextPoseLabel(),
-        });
+        var poseItem = new PoseItem(poseData)
+        {
+            Label = GetNextPoseLabel()
+        };
+
+        _dataSource.Poses.Add(poseItem);
     }
 
     private string GetNextPoseLabel()
     {
-        var lastPose = _dataSource.Poses.LastOrDefault(p => s_poseLabelRegex.IsMatch(p.Label));
+        var lastPose = _dataSource.Poses.LastOrDefault(p => PoseLabelRegex.IsMatch(p.Label));
         var lastPoseIndex = 0;
 
         if (lastPose is not null)
         {
-            var match = s_poseLabelRegex.Match(lastPose.Label);
+            var match = PoseLabelRegex.Match(lastPose.Label);
             lastPoseIndex= int.Parse(match.Groups[1].Value);
         }
 
-        return string.Format(s_poseLabelFormat, lastPoseIndex + 1);
+        return string.Format(PoseLabelFormat, lastPoseIndex + 1);
     }
 
     private void OnDeletePoseButtonClicked(object sender, RoutedEventArgs e)

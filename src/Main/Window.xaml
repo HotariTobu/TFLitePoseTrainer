@@ -66,7 +66,9 @@
                             <!-- <CheckBox Name="selectionCheckBox"
                                       IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
                                       IsHitTestVisible="False"/> -->
-                            <Image Grid.Row="0"/>
+                            <Image Grid.Row="0"
+                                    Source="{Binding ThumbnailSource}"
+                                    Stretch="Uniform"/>
                             <TextBlock Grid.Row="1"
                                        Text="{Binding Label}"
                                        HorizontalAlignment="Center"
@@ -98,7 +100,9 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <Image Grid.Row="0"/>
+                            <Image Grid.Row="0"
+                                    Source="{Binding ThumbnailSource}"
+                                    Stretch="Uniform"/>
                             <Canvas Grid.Row="0">
                                 <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
                                         Tag="{Binding}"

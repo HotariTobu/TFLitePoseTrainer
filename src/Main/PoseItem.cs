@@ -1,31 +1,23 @@
-using System.Runtime.Serialization;
+using System.Windows.Media;
+
+using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
 
-public class PoseItem : SharedWPF.ViewModelBase, ISerializable
+public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
 {
-    public required Data.PoseData Data { get; init; }
+    private readonly PoseData _poseData = poseData;
 
-    #region == Label ==
-
-    private string _label = "";
+    public ImageSource ThumbnailSource { get; init; } = poseData.GetThumbnailSource();
     public string Label
     {
-        get => _label;
+        get => _poseData.Label ?? "";
         set
         {
-            if (_label != value)
+            if (_poseData.UpdateLabel(value))
             {
-                _label = value;
                 RaisePropertyChanged(nameof(Label));
             }
         }
-    }
-
-    #endregion
-
-    void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        throw new NotImplementedException();
     }
 }
