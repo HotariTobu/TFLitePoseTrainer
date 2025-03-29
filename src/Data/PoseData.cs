@@ -5,5 +5,5 @@ public record PoseData(
     DateTime CreatedAt
 )
 {
-    public PoseData(string id) : this(id, DateTime.Now) { }
+    public PoseData() : this(Guid.NewGuid().ToString(), DateTime.Now) { }
 }

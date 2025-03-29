@@ -22,10 +22,10 @@ public class PoseItem : SharedWPF.ViewModelBase, ISerializable
         }
     }
 
+    #endregion
+
     void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
     {
         throw new NotImplementedException();
     }
-
-    #endregion
 }

@@ -55,12 +55,12 @@ public partial class Window : System.Windows.Window
     {
         _dataSource.IsRecording = true;
 
-        await Task.Delay(5000);
+        //await Task.Delay(5000);
 
         _dataSource.CanStartRecording = true;
         _dataSource.IsRecording = false;
 
-        OnPoseRecorded?.Invoke(new(""));
+        OnPoseRecorded?.Invoke(new());
     }
 
     public event Action<PoseData>? OnPoseRecorded;
