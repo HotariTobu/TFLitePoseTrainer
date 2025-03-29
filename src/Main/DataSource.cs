@@ -12,44 +12,9 @@ namespace TFLitePoseTrainer.Main;
 
 internal class DataSource : SharedWPF.ViewModelBase
 {
-    #region == CaptureImage ==
+    #region == PoseItems ==
 
-    private WriteableBitmap? _captureImage;
-    public WriteableBitmap? CaptureImage
-    {
-        get => _captureImage;
-        set
-        {
-            if (_captureImage != value)
-            {
-                _captureImage = value;
-                RaisePropertyChanged(nameof(CaptureImage));
-            }
-        }
-    }
-
-    #endregion
-    #region == Timestamp ==
-
-    private string? _timestamp;
-    public string? Timestamp
-    {
-        get => _timestamp;
-        set
-        {
-            if (_timestamp != value)
-            {
-                _timestamp = value;
-                RaisePropertyChanged(nameof(Timestamp));
-            }
-        }
-    }
-
-    #endregion
-
-    #region == Poses ==
-
-    public ObservableCollection<PoseItem> Poses { get; } = [];
+    public ObservableCollection<PoseItem> PoseItems { get; } = [];
 
     #endregion
 

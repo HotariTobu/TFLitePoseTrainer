@@ -90,4 +90,44 @@ public class PoseData
 
         return poseData;
     }
+
+    public static IEnumerable<PoseData>? List()
+    {
+        try
+        {
+            var poseDataList = new List<PoseData>();
+
+            foreach (var directoryPath in Directory.EnumerateDirectories(RootPath))
+            {
+                var id = Path.GetFileName(directoryPath);
+                if (id is null)
+                {
+                    continue;
+                }
+
+                var createdAt = Directory.GetCreationTime(directoryPath);
+                var poseData = new PoseData(id, createdAt);
+
+                if (!File.Exists(poseData._thumbnailPath))
+                {
+                    continue;
+                }
+
+                if (File.Exists(poseData._labelPath))
+                {
+                    poseData.Label = File.ReadAllText(poseData._labelPath);
+                }
+
+                poseDataList.Add(poseData);
+            }
+
+            poseDataList.Sort((a, b) => a.CreatedAt.CompareTo(b.CreatedAt));
+            return poseDataList;
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Failed listing PoseData: {e}");
+            return null;
+        }
+    }
 }

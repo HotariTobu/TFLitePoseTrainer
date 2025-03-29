@@ -41,7 +41,7 @@
                 最初の要素は新たなポーズを記録するためのボタン。
             -->
             <ListBox Style="{StaticResource PosesControlStyle}"
-                     ItemsSource="{Binding Poses}"
+                     ItemsSource="{Binding PoseItems}"
                      SelectionMode="Multiple">
                 <ListBox.Visibility>
                     <Binding Path="IsEditing">
@@ -84,7 +84,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <ItemsControl Style="{StaticResource PosesControlStyle}"
-                     ItemsSource="{Binding Poses}">
+                     ItemsSource="{Binding PoseItems}">
                 <ItemsControl.Visibility>
                     <Binding Path="IsEditing">
                         <Binding.Converter>

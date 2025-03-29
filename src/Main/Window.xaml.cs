@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
+using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
 
@@ -25,8 +28,10 @@ public partial class Window : System.Windows.Window
         InitializeComponent();
         _dataSource = (DataSource)DataContext;
 
+        InitializePoseItems();
+
         _recordWindow = new();
-        _recordWindow.OnPoseRecorded += OnPoseRecorded;
+        _recordWindow.OnPoseRecorded += AddPoseItem;
     }
 
     protected override void OnClosed(EventArgs e)
@@ -37,25 +42,36 @@ public partial class Window : System.Windows.Window
         _recordWindow.Close();
     }
 
+    private async void InitializePoseItems()
+    {
+        var poseDataList = await Task.Run(PoseData.List);
+        if (poseDataList is null)
+        {
+            MessageBox.Show("Failed loading pose data");
+            return;
+        }
+
+        foreach (var poseData in poseDataList)
+        {
+            AddPoseItem(poseData);
+        }
+    }
+
     private void OnAddPoseButtonClicked(object sender, RoutedEventArgs e)
     {
         _recordWindow.Show();
         _recordWindow.Activate();
     }
 
-    private void OnPoseRecorded(Data.PoseData poseData)
+    private void AddPoseItem(PoseData poseData)
     {
-        var poseItem = new PoseItem(poseData)
-        {
-            Label = GetNextPoseLabel()
-        };
-
-        _dataSource.Poses.Add(poseItem);
+        var poseItem = new PoseItem(poseData, GetNextPoseLabel);
+        _dataSource.PoseItems.Add(poseItem);
     }
 
     private string GetNextPoseLabel()
     {
-        var lastPose = _dataSource.Poses.LastOrDefault(p => PoseLabelRegex.IsMatch(p.Label));
+        var lastPose = _dataSource.PoseItems.LastOrDefault(p => PoseLabelRegex.IsMatch(p.Label));
         var lastPoseIndex = 0;
 
         if (lastPose is not null)
@@ -79,6 +95,6 @@ public partial class Window : System.Windows.Window
             return;
         }
 
-        _dataSource.Poses.Remove(poseItem);
+        _dataSource.PoseItems.Remove(poseItem);
     }
 }
