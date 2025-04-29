@@ -20,7 +20,7 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #region == SelectedPoseItems ==
 
-    public IList<PoseItem> SelectedPoseItems { get; } = [];
+    public ObservableCollection<PoseItem> SelectedPoseItems { get; } = [];
 
     #endregion
 
