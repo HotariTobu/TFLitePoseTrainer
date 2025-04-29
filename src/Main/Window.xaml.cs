@@ -66,25 +66,12 @@ public partial class Window : System.Windows.Window
 
     private void OnPoseRecorded(PoseData poseData)
     {
+        var poseLabels = _dataSource.PoseItems.Select(p => p.Label);
         var poseItem = new PoseItem(poseData)
         {
-            Label = GetNextPoseLabel()
+            Label = GetInitialPoseLabel(poseLabels)
         };
         _dataSource.PoseItems.Add(poseItem);
-    }
-
-    private string GetNextPoseLabel()
-    {
-        var lastPose = _dataSource.PoseItems.LastOrDefault(p => PoseLabelRegex.IsMatch(p.Label));
-        var lastPoseIndex = 0;
-
-        if (lastPose is not null)
-        {
-            var match = PoseLabelRegex.Match(lastPose.Label);
-            lastPoseIndex = int.Parse(match.Groups[1].Value);
-        }
-
-        return string.Format(PoseLabelFormat, lastPoseIndex + 1);
     }
 
     private void OnDeletePoseButtonClicked(object sender, RoutedEventArgs e)
@@ -100,5 +87,19 @@ public partial class Window : System.Windows.Window
         }
 
         _dataSource.PoseItems.Remove(poseItem);
+    }
+
+    private static string GetInitialPoseLabel(IEnumerable<string> poseLabels)
+    {
+        var lastPoseLabel = poseLabels.LastOrDefault(PoseLabelRegex.IsMatch);
+        var lastPoseIndex = 0;
+
+        if (lastPoseLabel is not null)
+        {
+            var match = PoseLabelRegex.Match(lastPoseLabel);
+            lastPoseIndex = int.Parse(match.Groups[1].Value);
+        }
+
+        return string.Format(PoseLabelFormat, lastPoseIndex + 1);
     }
 }
