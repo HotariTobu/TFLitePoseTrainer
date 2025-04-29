@@ -94,10 +94,10 @@ public partial class Window : System.Windows.Window
         var pixels = new byte[width * height * 4];
         for (var i = 0; i < pixels.Length; i += 4)
         {
-            pixels[i] = b; 
+            pixels[i] = b;
             pixels[i + 1] = g;
-            pixels[i + 2] = r; 
-            pixels[i + 3] = 255; 
+            pixels[i + 2] = r;
+            pixels[i + 3] = 255;
         }
 
         var x = random.Next(0, maxWidth - width);
@@ -130,13 +130,13 @@ public partial class Window : System.Windows.Window
         var poseData = PoseData.Create(_dataSource.CaptureImage);
         if (poseData is null)
         {
-            MessageBox.Show("Failed recording pose");
+            MessageBox.Show("Failed creating pose data");
         }
         else
         {
             OnPoseRecorded?.Invoke(poseData);
         }
-            
+
         _dataSource.CanStartRecording = true;
         _dataSource.IsRecording = false;
     }
