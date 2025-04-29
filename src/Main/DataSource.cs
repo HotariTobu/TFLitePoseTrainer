@@ -18,6 +18,12 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #endregion
 
+    #region == SelectedPoseItems ==
+
+    public IList<PoseItem> SelectedPoseItems { get; } = [];
+
+    #endregion
+
     #region == IsEditing ==
 
     private bool _isEditing;
@@ -36,3 +42,5 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #endregion
 }
+
+internal class PoseListBoxSelectionBehavior : Behaviors.ListBoxSelectionBehavior<PoseItem> { }

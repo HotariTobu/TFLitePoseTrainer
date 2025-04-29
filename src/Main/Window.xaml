@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local_main="clr-namespace:TFLitePoseTrainer.Main"
         xmlns:local_cv="clr-namespace:TFLitePoseTrainer.Converters"
         mc:Ignorable="d"
@@ -43,6 +44,11 @@
             <ListBox Style="{StaticResource PosesControlStyle}"
                      ItemsSource="{Binding PoseItems}"
                      SelectionMode="Multiple">
+                <b:Interaction.Behaviors>
+                    <local_main:PoseListBoxSelectionBehavior
+                        SelectedItems="{Binding SelectedPoseItems}" />
+                </b:Interaction.Behaviors>
+
                 <ListBox.Visibility>
                     <Binding Path="IsEditing">
                         <Binding.Converter>
