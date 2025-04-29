@@ -4,7 +4,7 @@ using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
 
-public class PoseItem(PoseData poseData, Func<string >getFallbackLabel) : SharedWPF.ViewModelBase
+public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
 {
     private readonly PoseData _poseData = poseData;
 
@@ -15,7 +15,7 @@ public class PoseItem(PoseData poseData, Func<string >getFallbackLabel) : Shared
     #endregion
     #region === Label ===
 
-    private string _label = poseData.Label ?? getFallbackLabel();
+    private string _label = poseData.Label ?? poseData.Id;
     public string Label
     {
         get => _label;

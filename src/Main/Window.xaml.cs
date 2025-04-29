@@ -31,7 +31,7 @@ public partial class Window : System.Windows.Window
         InitializePoseItems();
 
         _recordWindow = new();
-        _recordWindow.OnPoseRecorded += AddPoseItem;
+        _recordWindow.OnPoseRecorded += OnPoseRecorded;
     }
 
     protected override void OnClosed(EventArgs e)
@@ -53,7 +53,8 @@ public partial class Window : System.Windows.Window
 
         foreach (var poseData in poseDataList)
         {
-            AddPoseItem(poseData);
+            var poseItem = new PoseItem(poseData);
+            _dataSource.PoseItems.Add(poseItem);
         }
     }
 
@@ -63,9 +64,12 @@ public partial class Window : System.Windows.Window
         _recordWindow.Activate();
     }
 
-    private void AddPoseItem(PoseData poseData)
+    private void OnPoseRecorded(PoseData poseData)
     {
-        var poseItem = new PoseItem(poseData, GetNextPoseLabel);
+        var poseItem = new PoseItem(poseData)
+        {
+            Label = GetNextPoseLabel()
+        };
         _dataSource.PoseItems.Add(poseItem);
     }
 
