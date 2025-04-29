@@ -61,7 +61,7 @@
                         </Binding.Converter>
                     </Binding>
                 </ListBox.Visibility>
-                
+
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -123,9 +123,98 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBlock Style="{StaticResource HeaderStyle}">
-                3. Train a model
-            </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Style="{StaticResource HeaderStyle}">
+                    Models
+                </TextBlock>
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom">
+                    <Button Content="👀"/>
+                    <Button Content="➕"
+                            Click="OnAddModelButtonClicked">
+                        <!-- <Button.IsEnabled>
+                            <MultiBinding>
+                                <MultiBinding.Converter>
+                                    <local_cv:BooleanAndMultiConverter/>
+                                </MultiBinding.Converter>
+                                <Binding Path="SelectedPoseItems">
+                                    <Binding.Converter>
+                                        <local_cv:CollectionIsEmptyConverter/>
+                                    </Binding.Converter>
+                                </Binding>
+                                <Binding Path="IsEditingPoses">
+                                    <Binding.Converter>
+                                        <local_cv:BooleanInverterConverter/>
+                                    </Binding.Converter>
+                                </Binding>
+                            </MultiBinding>
+                        </Button.IsEnabled> -->
+                    </Button>
+                    <ToggleButton Content="✏️"
+                                  IsChecked="{Binding IsEditingModels, Mode=TwoWay}"/>
+                </StackPanel>
+            </Grid>
+
+            <ListBox Style="{StaticResource ModelsControlStyle}"
+                     ItemsSource="{Binding ModelItems}">
+                <ListBox.Visibility>
+                    <Binding Path="IsEditingModels">
+                        <Binding.Converter>
+                            <local_cv:ChainConverter>
+                                <local_cv:ChainConverter.Converters>
+                                    <local_cv:BooleanInverterConverter/>
+                                    <BooleanToVisibilityConverter/>
+                                </local_cv:ChainConverter.Converters>
+                            </local_cv:ChainConverter>
+                        </Binding.Converter>
+                    </Binding>
+                </ListBox.Visibility>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <TextBlock Text="{Binding Label}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="20"
+                                       Padding="1"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ItemsControl Style="{StaticResource ModelsControlStyle}"
+                     ItemsSource="{Binding ModelItems}">
+                <ItemsControl.Visibility>
+                    <Binding Path="IsEditingModels">
+                        <Binding.Converter>
+                            <BooleanToVisibilityConverter/>
+                        </Binding.Converter>
+                    </Binding>
+                </ItemsControl.Visibility>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="5,2">
+                            <Canvas>
+                                <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
+                                        Tag="{Binding}"
+                                        Click="OnDeleteModelButtonClicked"/>
+                            </Canvas>
+                            <TextBox Text="{Binding Label, Mode=TwoWay}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="20"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </StackPanel>
     </ScrollViewer>
 </Window>

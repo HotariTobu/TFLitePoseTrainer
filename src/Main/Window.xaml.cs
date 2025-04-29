@@ -29,6 +29,7 @@ public partial class Window : System.Windows.Window
         _dataSource = (DataSource)DataContext;
 
         InitializePoseItems();
+        InitializeModelItems();
 
         _recordWindow = new();
         _recordWindow.OnPoseRecorded += OnPoseRecorded;
@@ -57,6 +58,24 @@ public partial class Window : System.Windows.Window
         {
             var poseItem = new PoseItem(poseData);
             poseItems.Add(poseItem);
+        }
+    }
+
+    private async void InitializeModelItems()
+    {
+        var modelDataList = await Task.Run(ModelData.List);
+        if (modelDataList is null)
+        {
+            MessageBox.Show("Failed loading model data");
+            return;
+        }
+
+        var modelItems = _dataSource.ModelItems;
+
+        foreach (var modelData in modelDataList)
+        {
+            var modelItem = new ModelItem(modelData);
+            modelItems.Add(modelItem);
         }
     }
 
@@ -91,6 +110,42 @@ public partial class Window : System.Windows.Window
         _dataSource.PoseItems.Remove(poseItem);
     }
 
+    private void OnAddModelButtonClicked(object sender, RoutedEventArgs e)
+    {
+        var selectedPoseItems = _dataSource.SelectedPoseItems.ToArray();
+
+        // TODO: Implement training logic
+
+        var modelData = ModelData.Create();
+        if (modelData is null)
+        {
+            MessageBox.Show("Failed creating model data");
+            return;
+        }
+
+        var selectedPoseLabels = selectedPoseItems.Select(p => p.Label);
+        var modelItem = new ModelItem(modelData)
+        {
+            Label = GetInitialModelLabel(selectedPoseLabels)
+        };
+        _dataSource.ModelItems.Add(modelItem);
+    }
+
+    private void OnDeleteModelButtonClicked(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement element)
+        {
+            return;
+        }
+
+        if (element.Tag is not ModelItem modelItem)
+        {
+            return;
+        }
+
+        _dataSource.ModelItems.Remove(modelItem);
+    }
+
     private static string GetInitialPoseLabel(IEnumerable<string> poseLabels)
     {
         var lastPoseLabel = poseLabels.LastOrDefault(PoseLabelRegex.IsMatch);
@@ -103,5 +158,25 @@ public partial class Window : System.Windows.Window
         }
 
         return string.Format(PoseLabelFormat, lastPoseIndex + 1);
+    }
+
+    private static string GetInitialModelLabel(IEnumerable<string> selectedPoseLabels)
+    {
+        var poseNames = selectedPoseLabels.Select(label =>
+        {
+            var match = PoseLabelRegex.Match(label);
+            if (match.Success)
+            {
+                var poseIndex = int.Parse(match.Groups[1].Value);
+                return poseIndex.ToString();
+            }
+            else
+            {
+                return label;
+            }
+
+        });
+
+        return $"Pose: {string.Join(", ", poseNames)}";
     }
 }

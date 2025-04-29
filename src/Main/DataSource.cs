@@ -41,6 +41,30 @@ internal class DataSource : SharedWPF.ViewModelBase
     }
 
     #endregion
+
+    #region == ModelItems ==
+
+    public ObservableCollection<ModelItem> ModelItems { get; } = [];
+
+    #endregion
+
+    #region == IsEditingModels ==
+
+    private bool _isEditingModels;
+    public bool IsEditingModels
+    {
+        get => _isEditingModels;
+        set
+        {
+            if (_isEditingModels != value)
+            {
+                _isEditingModels = value;
+                RaisePropertyChanged(nameof(IsEditingModels));
+            }
+        }
+    }
+
+    #endregion
 }
 
 internal class PoseListBoxSelectionBehavior : Behaviors.ListBoxSelectionBehavior<PoseItem> { }
