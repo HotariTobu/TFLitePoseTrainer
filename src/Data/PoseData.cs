@@ -26,7 +26,7 @@ public class PoseData
 
     private PoseData() : this(Guid.NewGuid().ToString(), DateTime.Now) { }
 
-    private PoseData(string id, DateTime createdAt) 
+    private PoseData(string id, DateTime createdAt)
     {
         Id = id;
         CreatedAt = createdAt;
@@ -77,7 +77,7 @@ public class PoseData
         try
         {
             using var thumbnailStream = new FileStream(poseData._thumbnailPath, FileMode.Create);
-            
+
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(thumbnailSource));
             encoder.Save(thumbnailStream);

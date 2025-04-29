@@ -17,8 +17,8 @@ namespace TFLitePoseTrainer.Main;
 
 public partial class Window : System.Windows.Window
 {
-    private readonly static string PoseLabelFormat = "Pose {0}";
-    private readonly static Regex PoseLabelRegex = new(@"Pose (\d+)");
+    private static readonly string PoseLabelFormat = "Pose {0}";
+    private static readonly Regex PoseLabelRegex = new(@"Pose (\d+)");
 
     private readonly DataSource _dataSource;
     private readonly Record.Window _recordWindow;
