@@ -24,18 +24,18 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #endregion
 
-    #region == IsEditing ==
+    #region == IsEditingPoses ==
 
-    private bool _isEditing;
-    public bool IsEditing
+    private bool _isEditingPoses;
+    public bool IsEditingPoses
     {
-        get => _isEditing;
+        get => _isEditingPoses;
         set
         {
-            if (_isEditing != value)
+            if (_isEditingPoses != value)
             {
-                _isEditing = value;
-                RaisePropertyChanged(nameof(IsEditing));
+                _isEditingPoses = value;
+                RaisePropertyChanged(nameof(IsEditingPoses));
             }
         }
     }

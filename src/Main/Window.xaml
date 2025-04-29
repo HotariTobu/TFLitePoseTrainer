@@ -33,7 +33,7 @@
                     <Button Content="➕"
                             Click="OnAddPoseButtonClicked"/>
                     <ToggleButton Content="✏️"
-                                  IsChecked="{Binding IsEditing, Mode=TwoWay}"/>
+                                  IsChecked="{Binding IsEditingPoses, Mode=TwoWay}"/>
                 </StackPanel>
             </Grid>
 
@@ -50,7 +50,7 @@
                 </b:Interaction.Behaviors>
 
                 <ListBox.Visibility>
-                    <Binding Path="IsEditing">
+                    <Binding Path="IsEditingPoses">
                         <Binding.Converter>
                             <local_cv:ChainConverter>
                                 <local_cv:ChainConverter.Converters>
@@ -92,7 +92,7 @@
             <ItemsControl Style="{StaticResource PosesControlStyle}"
                      ItemsSource="{Binding PoseItems}">
                 <ItemsControl.Visibility>
-                    <Binding Path="IsEditing">
+                    <Binding Path="IsEditingPoses">
                         <Binding.Converter>
                             <BooleanToVisibilityConverter/>
                         </Binding.Converter>
