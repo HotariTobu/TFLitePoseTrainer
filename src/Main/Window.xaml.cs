@@ -77,7 +77,7 @@ public partial class Window : System.Windows.Window
         if (lastPose is not null)
         {
             var match = PoseLabelRegex.Match(lastPose.Label);
-            lastPoseIndex= int.Parse(match.Groups[1].Value);
+            lastPoseIndex = int.Parse(match.Groups[1].Value);
         }
 
         return string.Format(PoseLabelFormat, lastPoseIndex + 1);
