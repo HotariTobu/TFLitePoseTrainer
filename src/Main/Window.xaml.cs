@@ -51,10 +51,12 @@ public partial class Window : System.Windows.Window
             return;
         }
 
+        var poseItems = _dataSource.PoseItems;
+
         foreach (var poseData in poseDataList)
         {
             var poseItem = new PoseItem(poseData);
-            _dataSource.PoseItems.Add(poseItem);
+            poseItems.Add(poseItem);
         }
     }
 
