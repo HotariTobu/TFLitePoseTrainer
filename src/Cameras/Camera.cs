@@ -29,6 +29,11 @@ internal class Camera(int index) : IDisposable
         {
             _lastCapture?.Dispose();
             _lastCapture = value;
+
+            if (_lastCapture is not null)
+            {
+                _lastCapture.Disposed += (s, e) => _lastCapture = null;
+            }
         }
     }
 
@@ -76,7 +81,7 @@ internal class Camera(int index) : IDisposable
             Console.Error.WriteLine($"Failed to stop cameras: {e}");
             return false;
         }
-        
+
         return true;
     }
 
