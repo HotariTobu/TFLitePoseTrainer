@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local_record="clr-namespace:TFLitePoseTrainer.Record"
         mc:Ignorable="d"
-        Title="Click to Record a New Pose" Height="450" Width="800">
+        Title="Click to Record a New Pose" Height="450" Width="800"
+        ShowActivated="True">
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml"/>
     </Window.Resources>
@@ -16,7 +17,7 @@
     <Grid>
         <Image Source="{Binding CaptureImage}"
                 Stretch="Uniform"/>
-        
+
         <Rectangle
             Name="RecordingIndicator"
             Stroke="Red"
@@ -27,7 +28,7 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation
-            Storyboard.TargetName="RecordingIndicator" 
+            Storyboard.TargetName="RecordingIndicator"
             Storyboard.TargetProperty="StrokeDashOffset"
             From="0" To="6" Duration="0:0:1"
                                 RepeatBehavior="Forever" />
@@ -80,7 +81,7 @@
                 <EventTrigger RoutedEvent="Button.Click">
                     <BeginStoryboard>
                         <Storyboard>
-                            <StringAnimationUsingKeyFrames 
+                            <StringAnimationUsingKeyFrames
                                 Storyboard.TargetName="startRecordingButton"
                                 Storyboard.TargetProperty="(Button.Content)"
                                 Completed="OnCountdownCompleted">

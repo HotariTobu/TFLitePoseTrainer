@@ -82,7 +82,6 @@ public partial class Window : System.Windows.Window
     private void OnAddPoseButtonClicked(object sender, RoutedEventArgs e)
     {
         _recordWindow.Show();
-        _recordWindow.Activate();
     }
 
     private void OnPoseRecorded(PoseData poseData)
