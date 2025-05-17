@@ -13,9 +13,14 @@ public partial class App : Application
         MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         e.Handled = true;
 
-        if (!MainWindow.IsVisible)
+        foreach (var window in Windows.Cast<Window>())
         {
-            Shutdown(1);
+            if (window?.IsVisible == true)
+            {
+                return;
+            }
         }
+
+        Shutdown(1);
     }
 }
