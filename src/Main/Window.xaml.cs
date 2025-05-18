@@ -35,9 +35,9 @@ public partial class Window : System.Windows.Window
         _recordWindow.OnPoseRecorded += OnPoseRecorded;
     }
 
-    protected override void OnClosed(EventArgs e)
+    protected override void OnClosing(CancelEventArgs e)
     {
-        base.OnClosed(e);
+        base.OnClosing(e);
 
         _recordWindow.CanClose = true;
         _recordWindow.Close();
