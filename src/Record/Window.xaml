@@ -6,8 +6,7 @@
         xmlns:local_record="clr-namespace:TFLitePoseTrainer.Record"
         mc:Ignorable="d"
         Title="Click to Record a New Pose" Height="480" Width="800"
-        Background="Black"
-        ShowActivated="True">
+        Background="Black">
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml"/>
     </Window.Resources>
