@@ -72,6 +72,12 @@ public partial class Window : System.Windows.Window
 
     private void OnAddPoseButtonClicked(object sender, RoutedEventArgs e)
     {
+        if (!_recordWindow.CanShow)
+        {
+            MessageBox.Show("Tracking service not initialized yet.", "Please Wait", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
         _recordWindow.Show();
         _recordWindow.Activate();
     }

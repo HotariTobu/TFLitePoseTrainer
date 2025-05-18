@@ -1,53 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
+
+using K4AdotNet;
+using K4AdotNet.BodyTracking;
+using K4AdotNet.Sensor;
 
 using TFLitePoseTrainer.Data;
 using TFLitePoseTrainer.Extensions;
+using TFLitePoseTrainer.Loops;
 
 namespace TFLitePoseTrainer.Record;
 
 public partial class Window : System.Windows.Window
 {
+    private static readonly DeviceConfiguration DeviceConfig = new()
+    {
+        CameraFps = FrameRate.Thirty,
+        DepthMode = DepthMode.NarrowViewUnbinned,
+        ColorResolution = ColorResolution.R720p,
+        ColorFormat = ImageFormat.ColorBgra32,
+        SynchronizedImagesOnly = true,
+    };
+
     public bool CanClose = false;
 
     private readonly DataSource _dataSource;
-    private readonly Timer _timer;
+
+    private CaptureLoop? _captureLoop;
+    private TrackingLoop? _trackingLoop;
+
+    public bool CanShow => _captureLoop is not null && _trackingLoop is not null;
 
     public Window()
     {
         InitializeComponent();
         _dataSource = (DataSource)DataContext;
 
-        _dataSource.CaptureImage = new(1920, 1080, 96, 96, PixelFormats.Bgra32, null);
+        var dpiScale = VisualTreeHelper.GetDpi(this);
+        _dataSource.CaptureImage = CreateRenderTarget(DeviceConfig, dpiScale);
 
-        _timer = new(TimerTick);
+        InitializeService(DeviceConfig);
     }
 
-    protected override void OnActivated(EventArgs e)
+    protected override async void OnActivated(EventArgs e)
     {
+        Debug.Assert(_captureLoop is not null);
+        Debug.Assert(_trackingLoop is not null);
+
         base.OnActivated(e);
-        _timer.Start(1000 / 30);
+        await Task.WhenAll(Task.Run(_captureLoop.Start), Task.Run(_trackingLoop.Start));
     }
 
-    protected override void OnDeactivated(EventArgs e)
+    protected override async void OnDeactivated(EventArgs e)
     {
+        Debug.Assert(_captureLoop is not null);
+        Debug.Assert(_trackingLoop is not null);
+
         base.OnDeactivated(e);
-        _timer.Stop();
+        await Task.WhenAll(Task.Run(_captureLoop.Stop), Task.Run(_trackingLoop.Stop));
     }
 
     protected override void OnClosing(CancelEventArgs e)
@@ -66,45 +80,70 @@ public partial class Window : System.Windows.Window
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
-        _timer.Dispose();
+        _captureLoop?.Dispose();
+        _trackingLoop?.Dispose();
     }
 
-    private void TimerTick(object? state)
+    private async void InitializeService(DeviceConfiguration deviceConfig)
     {
-        Application.Current.Dispatcher.BeginInvoke(UpdateCaptureImage);
+        await Task.WhenAll(CheckRuntime(), WaitForConnection());
+        _captureLoop = await CreateCaptureLoop(deviceConfig);
+        var calibration = await GetCalibration(_captureLoop);
+        _trackingLoop = await CreateTrackingLoop(calibration);
+
+        _captureLoop.CaptureReady += _trackingLoop.Enqueue;
+        _captureLoop.CaptureReady += UpdateCaptureImage;
+        _trackingLoop.BodyFrameReady += UpdateSkeleton;
     }
 
-    private void UpdateCaptureImage()
+    private void UpdateCaptureImage(Capture capture)
     {
         Debug.Assert(_dataSource.CaptureImage is not null);
 
-        var random = new Random();
-
-        var writableBitmap = _dataSource.CaptureImage;
-        var maxWidth = writableBitmap.PixelWidth;
-        var maxHeight = writableBitmap.PixelHeight;
-
-        var width = random.Next(maxWidth / 100, maxWidth / 4);
-        var height = random.Next(maxHeight / 100, maxHeight / 4);
-
-        var r = (byte)random.Next(0, 255);
-        var g = (byte)random.Next(0, 255);
-        var b = (byte)random.Next(0, 255);
-
-        var pixels = new byte[width * height * 4];
-        for (var i = 0; i < pixels.Length; i += 4)
+        using var image = capture.ColorImage;
+        if (image is null)
         {
-            pixels[i] = b;
-            pixels[i + 1] = g;
-            pixels[i + 2] = r;
-            pixels[i + 3] = 255;
+            Console.Error.WriteLine("Failed to get color image from capture.");
+            return;
         }
 
-        var x = random.Next(0, maxWidth - width);
-        var y = random.Next(0, maxHeight - height);
+        var width = image.WidthPixels;
+        var height = image.HeightPixels;
 
-        var rect = new Int32Rect(x, y, width, height);
-        writableBitmap.WritePixels(rect, pixels, width * 4, 0);
+        var bufferSize = image.SizeBytes;
+        var stride = image.StrideBytes;
+
+        var buffer = Marshal.AllocHGlobal(bufferSize);
+        if (buffer == IntPtr.Zero)
+        {
+            Console.Error.WriteLine("Failed to allocate memory for image buffer.");
+            return;
+        }
+
+        unsafe
+        {
+            var src = image.Buffer.ToPointer();
+            var dst = buffer.ToPointer();
+            Buffer.MemoryCopy(src, dst, bufferSize, bufferSize);
+        }
+
+        Dispatcher.Invoke(() =>
+        {
+            var rect = new Int32Rect(0, 0, width, height);
+            _dataSource.CaptureImage.WritePixels(rect, buffer, bufferSize, stride);
+
+            Marshal.FreeHGlobal(buffer);
+        });
+    }
+
+    private void UpdateSkeleton(BodyFrame bodyFrame)
+    {
+        // TODO: Implement skeleton update logic
+        // Console.WriteLine(bodyFrame);
+        if (bodyFrame.BodyCount > 0)
+        {
+            Console.WriteLine(bodyFrame);
+        }
     }
 
     private void OnButtonClicked(object sender, RoutedEventArgs e)
@@ -139,6 +178,109 @@ public partial class Window : System.Windows.Window
 
         _dataSource.CanStartRecording = true;
         _dataSource.IsRecording = false;
+    }
+
+    private static async Task CheckRuntime()
+    {
+        var errorMessage = await Task.Run(() =>
+        {
+            string? message = null;
+
+            try
+            {
+                var mode = TrackerProcessingMode.GpuCuda;
+                Sdk.TryInitializeBodyTrackingRuntime(mode, out message);
+            }
+            catch (Exception e)
+            {
+                message = $"Failed to check body tracking runtime availability: {e}";
+                Console.Error.WriteLine(message);
+            }
+
+            return message;
+        });
+
+        if (errorMessage is not null)
+        {
+            MessageBox.Show(errorMessage, "Body Tracking Not Available", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown(10);
+        }
+    }
+
+    private static async Task WaitForConnection()
+    {
+        while (true)
+        {
+            var deviceCount = await Task.Run(() => Device.InstalledCount);
+            if (deviceCount > 0)
+            {
+                break;
+            }
+
+            var result = MessageBox.Show("Confirm connecting a tracking device, then press OK.", "Device Not Found", MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.OK);
+            if (result == MessageBoxResult.OK)
+            {
+                continue;
+            }
+
+            Application.Current.Shutdown(11);
+        }
+    }
+
+    private static async Task<CaptureLoop> CreateCaptureLoop(DeviceConfiguration deviceConfig)
+    {
+        var captureParam = new CaptureLoop.Param(deviceConfig);
+
+        var captureLoop = await Task.Run(() => CaptureLoop.Create(captureParam));
+        if (captureLoop is null)
+        {
+            MessageBox.Show("Failed to create capture loop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown(12);
+        }
+
+        Debug.Assert(captureLoop is not null);
+
+        return captureLoop;
+    }
+
+    private static async Task<Calibration> GetCalibration(CaptureLoop captureLoop)
+    {
+        var calibration = await Task.Run(captureLoop.GetCalibration);
+        if (!calibration.HasValue)
+        {
+            MessageBox.Show("Failed to get calibration.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown(13);
+        }
+
+        return calibration.Value;
+    }
+
+    private static async Task<TrackingLoop> CreateTrackingLoop(Calibration calibration)
+    {
+        var trackingParam = new TrackingLoop.Param(calibration);
+
+        var trackingLoop = await Task.Run(() => TrackingLoop.Create(trackingParam));
+        if (trackingLoop is null)
+        {
+            MessageBox.Show("Failed to create tracking loop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown(14);
+        }
+
+        Debug.Assert(trackingLoop is not null);
+
+        return trackingLoop;
+    }
+
+    private static WriteableBitmap CreateRenderTarget(in DeviceConfiguration deviceConfig, in DpiScale dpiScale)
+    {
+        var width = deviceConfig.ColorResolution.WidthPixels();
+        var height = deviceConfig.ColorResolution.HeightPixels();
+        var format = deviceConfig.ColorFormat.ToPixelFormat();
+
+        double dpiX = dpiScale.PixelsPerInchX;
+        double dpiY = dpiScale.PixelsPerInchY;
+
+        return new(width, height, dpiX, dpiY, format, null);
     }
 
     public event Action<PoseData>? OnPoseRecorded;
