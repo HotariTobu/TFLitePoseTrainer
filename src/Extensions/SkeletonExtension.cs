@@ -6,13 +6,16 @@ namespace TFLitePoseTrainer.Extensions;
 
 public static class SkeletonExtension
 {
-    public static IEnumerable<Vector3> GetNormalizedJointVectors(Skeleton bodySkelton)
+    private static readonly JointType OriginJointType = JointType.Pelvis;
+    private static readonly JointType FactorBaseJointType = JointType.Neck;
+
+    public static IEnumerable<Vector3> GetNormalizedJointVectors(this in Skeleton skelton)
     {
-        var jointPositions = from joint in bodySkelton
+        var jointPositions = from joint in skelton
                              select joint.GetPos();
 
-        var jointPositionOrigin = bodySkelton.Pelvis.GetPos();
-        var jointVectorFactorBase = bodySkelton.Neck.GetPos();
+        var jointPositionOrigin = skelton[OriginJointType].GetPos();
+        var jointVectorFactorBase = skelton[FactorBaseJointType].GetPos();
         var jointVectorFactor = 1 / (jointPositionOrigin - jointVectorFactorBase).Length();
 
         var jointNormalizedVectors = from jointPosition in jointPositions

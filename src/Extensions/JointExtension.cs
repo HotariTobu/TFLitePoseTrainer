@@ -6,7 +6,7 @@ namespace TFLitePoseTrainer.Extensions;
 
 public static class JointExtension
 {
-    public static Vector3 GetPos(this Joint joint)
+    public static Vector3 GetPos(this in Joint joint)
     {
         return new Vector3(joint.PositionMm.X, joint.PositionMm.Y, joint.PositionMm.Z);
     }
