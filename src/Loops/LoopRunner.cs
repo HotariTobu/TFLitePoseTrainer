@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace TFLitePoseTrainer.Loops;
 
 class LoopRunner(Action action) : IDisposable
@@ -23,7 +21,11 @@ class LoopRunner(Action action) : IDisposable
 
     public void Start()
     {
-        Debug.Assert(_thread is null);
+        if (_thread is not null || _isRunning)
+        {
+            return;
+        }
+
         _thread = new Thread(Run) { IsBackground = true };
         _isRunning = true;
         _thread.Start();
@@ -31,7 +33,11 @@ class LoopRunner(Action action) : IDisposable
 
     public void Stop()
     {
-        Debug.Assert(_thread is not null);
+        if (_thread is null || !_isRunning)
+        {
+            return;
+        }
+
         _isRunning = false;
         _thread.Join();
         _thread = null;
