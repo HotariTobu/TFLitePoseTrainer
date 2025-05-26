@@ -91,6 +91,8 @@ public partial class Window : System.Windows.Window
         var calibration = await GetCalibration(_captureLoop);
         _trackingLoop = await CreateTrackingLoop(calibration);
 
+        _dataSource.Calibration = calibration;
+
         _captureLoop.CaptureReady += _trackingLoop.Enqueue;
         _captureLoop.CaptureReady += UpdateCaptureImage;
         _trackingLoop.BodyFrameReady += UpdateSkeleton;
