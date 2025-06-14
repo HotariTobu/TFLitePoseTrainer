@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch TFLitePoseTrainer",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/x64/Debug/net9.0-windows/TFLitePoseTrainer.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/bin/x64/Debug/net9.0-windows",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Attach .NET",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}
