@@ -259,7 +259,8 @@ public partial class Window : System.Windows.Window
     {
         var trackingParam = new TrackingLoop.Param(calibration);
 
-        var trackingLoop = await Task.Run(() => TrackingLoop.Create(trackingParam));
+        // var trackingLoop = await Task.Run(() => TrackingLoop.Create(trackingParam));
+        var trackingLoop = TrackingLoop.Create(trackingParam); await Task.Run(() => { });
         if (trackingLoop is null)
         {
             MessageBox.Show("Failed to create tracking loop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
