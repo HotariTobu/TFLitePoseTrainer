@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local_record="clr-namespace:TFLitePoseTrainer.Record"
+        xmlns:local_ctrl="clr-namespace:TFLitePoseTrainer.Controls"
         mc:Ignorable="d"
         Title="Click to Record a New Pose" Height="480" Width="800"
         Background="Black">
@@ -17,6 +18,27 @@
     <Grid>
         <Image Source="{Binding CaptureImage}"
                 Stretch="Uniform"/>
+
+        <Viewbox>
+            <ItemsControl
+                ItemsSource="{Binding SkeletonItems}"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                            <Grid/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local_ctrl:SkeletonElement
+                            Calibration="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ItemsControl}}, Path=DataContext.Calibration}"
+                            ProjectionMode="Color"
+                            Skeleton="{Binding Skeleton}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Viewbox>
 
         <Rectangle
             Name="RecordingIndicator"

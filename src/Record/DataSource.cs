@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+
+using K4AdotNet.BodyTracking;
+using K4AdotNet.Sensor;
 
 namespace TFLitePoseTrainer.Record;
 
@@ -29,6 +25,27 @@ internal class DataSource : SharedWPF.ViewModelBase
     }
 
     #endregion
+    #region == Calibration ==
+
+    private Calibration _calibration = new();
+
+    public Calibration Calibration
+    {
+        get => _calibration;
+        set
+        {
+            _calibration = value;
+            RaisePropertyChanged(nameof(Calibration));
+        }
+    }
+
+    #endregion
+    #region == SkeletonItems ==
+
+    public ObservableCollection<SkeletonItem> SkeletonItems { get; } = [];
+
+    #endregion
+
     #region == CanStartRecording ==
 
     private bool _canStartRecording = true;
@@ -63,4 +80,28 @@ internal class DataSource : SharedWPF.ViewModelBase
     }
 
     #endregion
+
+    public class SkeletonItem(BodyId bodyId, Skeleton skeleton) : SharedWPF.ViewModelBase
+    {
+        #region == BodyId ==
+
+        public readonly BodyId BodyId = bodyId;
+
+        #endregion
+        #region == Skeleton ==
+
+        private Skeleton _skeleton = skeleton;
+
+        public Skeleton Skeleton
+        {
+            get => _skeleton;
+            set
+            {
+                _skeleton = value;
+                RaisePropertyChanged(nameof(Skeleton));
+            }
+        }
+
+        #endregion
+    }
 }
