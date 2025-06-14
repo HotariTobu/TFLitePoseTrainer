@@ -140,12 +140,55 @@ public partial class Window : System.Windows.Window
 
     private void UpdateSkeleton(BodyFrame bodyFrame)
     {
-        // TODO: Implement skeleton update logic
-        // Console.WriteLine(bodyFrame);
-        if (bodyFrame.BodyCount > 0)
+        var skeletonItems = _dataSource.SkeletonItems;
+        var actionDictionary = (
+            from item in skeletonItems
+            let initialAction = new Action(() => skeletonItems.Remove(item))
+            select KeyValuePair.Create(item.BodyId, initialAction)
+        ).ToDictionary();
+
+        for (var bodyIndex = 0; bodyIndex < bodyFrame.BodyCount; bodyIndex++)
         {
-            Console.WriteLine(bodyFrame);
+            var bodyId = bodyFrame.GetBodyId(bodyIndex);
+            if (!bodyId.IsValid)
+            {
+                continue;
+            }
+
+            Skeleton skeleton = default;
+
+            try
+            {
+                bodyFrame.GetBodySkeleton(bodyIndex, out skeleton);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Failed to get skeleton for body {bodyId}: {e}");
+                continue;
+            }
+
+            var item = skeletonItems.FirstOrDefault(item => item.BodyId == bodyId);
+            if (item is null)
+            {
+                actionDictionary.Add(bodyId, () =>
+                {
+                    item = new DataSource.SkeletonItem(bodyId, skeleton);
+                    skeletonItems.Add(item);
+                });
+            }
+            else
+            {
+                actionDictionary[bodyId] = () => item.Skeleton = skeleton;
+            }
         }
+
+        Dispatcher.Invoke(() =>
+        {
+            foreach (var action in actionDictionary.Values)
+            {
+                action();
+            }
+        });
     }
 
     private void OnButtonClicked(object sender, RoutedEventArgs e)

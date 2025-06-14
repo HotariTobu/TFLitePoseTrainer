@@ -81,8 +81,13 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #endregion
 
-    public class SkeletonItem(Skeleton skeleton) : SharedWPF.ViewModelBase
+    public class SkeletonItem(BodyId bodyId, Skeleton skeleton) : SharedWPF.ViewModelBase
     {
+        #region == BodyId ==
+
+        public readonly BodyId BodyId = bodyId;
+
+        #endregion
         #region == Skeleton ==
 
         private Skeleton _skeleton = skeleton;

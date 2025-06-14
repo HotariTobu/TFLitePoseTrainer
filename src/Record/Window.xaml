@@ -18,24 +18,27 @@
     <Grid>
         <Image Source="{Binding CaptureImage}"
                 Stretch="Uniform"/>
-        <ItemsControl
-            ItemsSource="{Binding SkeletonItems}"
-            HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <local_ctrl:SkeletonElement
-                        Calibration="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ItemsControl}}, Path=DataContext.Calibration}"
-                        ProjectionMode="Color"
-                        Skeleton="{Binding Skeleton}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+
+        <Viewbox>
+            <ItemsControl
+                ItemsSource="{Binding SkeletonItems}"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                            <Grid/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local_ctrl:SkeletonElement
+                            Calibration="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ItemsControl}}, Path=DataContext.Calibration}"
+                            ProjectionMode="Color"
+                            Skeleton="{Binding Skeleton}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Viewbox>
 
         <Rectangle
             Name="RecordingIndicator"
