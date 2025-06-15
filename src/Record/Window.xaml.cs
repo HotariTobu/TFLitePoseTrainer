@@ -172,7 +172,7 @@ public partial class Window : System.Windows.Window
             {
                 actionDictionary.Add(bodyId, () =>
                 {
-                    item = new DataSource.SkeletonItem(bodyId, skeleton);
+                    item = new SkeletonItem(bodyId, skeleton);
                     skeletonItems.Add(item);
                 });
             }
@@ -213,9 +213,9 @@ public partial class Window : System.Windows.Window
         defer.Disposed += () => _dataSource.IsRecording = false;
         defer.Disposed += () => _dataSource.ProgressValue = 0.0;
 
-        var frames = new PoseData.Frame[PoseData.FrameCount];
+        var frames = new PoseData.Frame[Constants.PoseFrameCount];
 
-        for (var i = 0; i < PoseData.FrameCount;)
+        for (var i = 0; i < Constants.PoseFrameCount;)
         {
             if (!IsVisible)
             {
@@ -248,7 +248,7 @@ public partial class Window : System.Windows.Window
                 frames[i] = new(jointVectors);
                 i++;
 
-                _dataSource.ProgressValue = (double)i / PoseData.FrameCount;
+                _dataSource.ProgressValue = (double)i / Constants.PoseFrameCount;
             }
         }
 

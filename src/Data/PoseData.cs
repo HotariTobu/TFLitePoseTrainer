@@ -10,8 +10,6 @@ namespace TFLitePoseTrainer.Data;
 
 public class PoseData
 {
-    public static readonly int FrameCount = 2000;
-
     private static readonly string RootPath = Path.GetFullPath(@"pose-data");
     private static readonly string ThumbnailPathFormat = Path.Join("{0}", "thumbnail.png");
     private static readonly string LabelPathFormat = Path.Join("{0}", "label.txt");
@@ -184,7 +182,7 @@ public class PoseData
 
     private static Messages.PoseData? GetPoseDataMessage(IReadOnlyCollection<Frame> frames)
     {
-        if (frames.Count != FrameCount)
+        if (frames.Count != Constants.PoseFrameCount)
         {
             return null;
         }
@@ -212,7 +210,7 @@ public class PoseData
 
     private static IEnumerable<Frame>? GetPoseFrames(Messages.PoseData poseDataMessage)
     {
-        if (poseDataMessage.Frames.Count != FrameCount)
+        if (poseDataMessage.Frames.Count != Constants.PoseFrameCount)
         {
             return null;
         }
@@ -228,15 +226,14 @@ public class PoseData
 
     public record Frame
     {
-        private static readonly int JointCount = JointTypes.All.Count;
         public readonly IEnumerable<Vector3> JointVectors;
 
         public Frame(IEnumerable<Vector3> jointVectors)
         {
             var jointCount = jointVectors.Count();
-            if (jointCount != JointCount)
+            if (jointCount != Constants.PoseJointCount)
             {
-                throw new ArgumentException($"Expected {JointCount} joint vectors, but got {jointCount}.");
+                throw new ArgumentException($"Expected {Constants.PoseJointCount} joint vectors, but got {jointCount}.");
             }
 
             JointVectors = jointVectors;
