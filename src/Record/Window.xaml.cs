@@ -208,10 +208,20 @@ public partial class Window : System.Windows.Window
 
         _dataSource.IsRecording = true;
 
+        using var defer = new Defer();
+        defer.Disposed += () => _dataSource.CanStartRecording = true;
+        defer.Disposed += () => _dataSource.IsRecording = false;
+        defer.Disposed += () => _dataSource.ProgressValue = 0.0;
+
         var frames = new PoseData.Frame[PoseData.FrameCount];
 
         for (var i = 0; i < PoseData.FrameCount;)
         {
+            if (!IsVisible)
+            {
+                return;
+            }
+
             var tcs = new TaskCompletionSource<Skeleton?>();
 
             void SetResult(BodyFrame bodyFrame)
@@ -250,10 +260,6 @@ public partial class Window : System.Windows.Window
         {
             OnPoseRecorded?.Invoke(poseData);
         }
-
-        _dataSource.CanStartRecording = true;
-        _dataSource.IsRecording = false;
-        _dataSource.ProgressValue = 0.0;
     }
 
     private static async Task CheckRuntime()
