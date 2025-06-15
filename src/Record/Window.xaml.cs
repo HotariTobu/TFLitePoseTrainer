@@ -213,7 +213,7 @@ public partial class Window : System.Windows.Window
         defer.Disposed += () => _dataSource.IsRecording = false;
         defer.Disposed += () => _dataSource.ProgressValue = 0.0;
 
-        var frames = new PoseData.Frame[Constants.PoseFrameCount];
+        var frames = new PoseFrame[Constants.PoseFrameCount];
 
         for (var i = 0; i < Constants.PoseFrameCount;)
         {
@@ -252,7 +252,8 @@ public partial class Window : System.Windows.Window
             }
         }
 
-        var poseData = PoseData.Create(_dataSource.CaptureImage, frames);
+        var sample = new PoseSample(frames);
+        var poseData = PoseData.Create(_dataSource.CaptureImage, sample);
         if (poseData is null)
         {
             MessageBox.Show("Failed creating pose data");

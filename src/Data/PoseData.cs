@@ -2,9 +2,7 @@ using System.IO;
 using System.Numerics;
 using System.Windows.Media.Imaging;
 
-using K4AdotNet.BodyTracking;
-
-using TFLitePoseTrainer.Extensions;
+using TFLitePoseTrainer.Interfaces;
 
 namespace TFLitePoseTrainer.Data;
 
@@ -26,7 +24,7 @@ public class PoseData
     private readonly string _thumbnailPath;
     private readonly string _labelPath;
     private readonly string _dataPath;
-    private IEnumerable<Frame>? _frames;
+    private IPoseSample? _sample;
 
     public string? Label { get; private set; }
 
@@ -44,17 +42,17 @@ public class PoseData
 
     public BitmapSource GetThumbnailSource() => new BitmapImage(new(_thumbnailPath));
 
-    public IEnumerable<Frame>? Frames
+    public IPoseSample? Sample
     {
         get
         {
-            if (_frames is null)
+            if (_sample is null)
             {
                 try
                 {
                     using var input = File.OpenRead(_dataPath);
-                    var poseDataMessage = Messages.PoseData.Parser.ParseFrom(input);
-                    _frames = GetPoseFrames(poseDataMessage);
+                    var poseSampleMessage = Messages.PoseSample.Parser.ParseFrom(input);
+                    _sample = FromMessage(poseSampleMessage);
                 }
                 catch (Exception e)
                 {
@@ -62,7 +60,7 @@ public class PoseData
                 }
             }
 
-            return _frames;
+            return _sample;
         }
     }
 
@@ -81,18 +79,13 @@ public class PoseData
         }
     }
 
-    public static PoseData? Create(BitmapSource thumbnailSource, IReadOnlyCollection<Frame> frames)
+    public static PoseData? Create(BitmapSource thumbnailSource, IPoseSample sample)
     {
-        var poseDataMessage = GetPoseDataMessage(frames);
-        if (poseDataMessage is null)
-        {
-            Console.Error.WriteLine($"Failed creating PoseData: Invalid frame count: {frames.Count}");
-            return null;
-        }
+        var poseSampleMessage = ToMessage(sample);
 
         var poseData = new PoseData()
         {
-            _frames = frames
+            _sample = sample
         };
         var basePath = Path.Join(RootPath, poseData.Id);
 
@@ -129,7 +122,7 @@ public class PoseData
         try
         {
             using var output = File.Create(poseData._dataPath);
-            poseDataMessage.WriteTo(new(output));
+            poseSampleMessage.WriteTo(new(output));
         }
         catch (Exception e)
         {
@@ -180,15 +173,11 @@ public class PoseData
         }
     }
 
-    private static Messages.PoseData? GetPoseDataMessage(IReadOnlyCollection<Frame> frames)
+    private static Messages.PoseSample ToMessage(IPoseSample sample)
     {
-        if (frames.Count != Constants.PoseFrameCount)
-        {
-            return null;
-        }
-        var poseData = new Messages.PoseData();
+        var poseData = new Messages.PoseSample();
 
-        foreach (var frame in frames)
+        foreach (var frame in sample.Frames)
         {
             var poseFrame = new Messages.PoseFrame();
 
@@ -208,35 +197,22 @@ public class PoseData
         return poseData;
     }
 
-    private static IEnumerable<Frame>? GetPoseFrames(Messages.PoseData poseDataMessage)
+    private static PoseSample? FromMessage(Messages.PoseSample poseSampleMessage)
     {
-        if (poseDataMessage.Frames.Count != Constants.PoseFrameCount)
+        try
         {
-            return null;
+            return new PoseSample(
+                from frameMessage in poseSampleMessage.Frames
+                select new PoseFrame(
+                    from jointVector in frameMessage.JointVectors
+                    select new Vector3(jointVector.X, jointVector.Y, jointVector.Z)
+                )
+            );
         }
-
-        var frames = from frameMessage in poseDataMessage.Frames
-                     select new Frame(
-                        from jointVector in frameMessage.JointVectors
-                        select new Vector3(jointVector.X, jointVector.Y, jointVector.Z)
-                     );
-
-        return frames;
-    }
-
-    public record Frame
-    {
-        public readonly IEnumerable<Vector3> JointVectors;
-
-        public Frame(IEnumerable<Vector3> jointVectors)
+        catch (Exception e)
         {
-            var jointCount = jointVectors.Count();
-            if (jointCount != Constants.PoseJointCount)
-            {
-                throw new ArgumentException($"Expected {Constants.PoseJointCount} joint vectors, but got {jointCount}.");
-            }
-
-            JointVectors = jointVectors;
+            Console.Error.WriteLine($"Failed parsing pose frames: {e}");
+            return null;
         }
     }
 }

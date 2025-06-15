@@ -12,6 +12,6 @@ message PoseFrame {
     repeated Vector3 joint_vectors = 1;
 }
 
-message PoseData {
+message PoseSample {
     repeated PoseFrame frames = 1;
 }

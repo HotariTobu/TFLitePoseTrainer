@@ -44,7 +44,7 @@
             "args": [
                 "--proto_path=\"${workspaceFolder}/proto\"",
                 "--csharp_out=\"${workspaceFolder}/src/Messages\"",
-                "\"${workspaceFolder}/proto/pose.proto\""
+                "\"${workspaceFolder}/proto/pose_message.proto\""
             ],
         }
     ]
