@@ -28,6 +28,7 @@ public class PoseData
     private readonly string _thumbnailPath;
     private readonly string _labelPath;
     private readonly string _dataPath;
+    private IEnumerable<Frame>? _frames;
 
     public string? Label { get; private set; }
 
@@ -44,6 +45,28 @@ public class PoseData
     }
 
     public BitmapSource GetThumbnailSource() => new BitmapImage(new(_thumbnailPath));
+
+    public IEnumerable<Frame>? Frames
+    {
+        get
+        {
+            if (_frames is null)
+            {
+                try
+                {
+                    using var input = File.OpenRead(_dataPath);
+                    var poseDataMessage = Messages.PoseData.Parser.ParseFrom(input);
+                    _frames = GetPoseFrames(poseDataMessage);
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine($"Failed reading pose data: {e}");
+                }
+            }
+
+            return _frames;
+        }
+    }
 
     public bool UpdateLabel(string label)
     {
@@ -62,14 +85,17 @@ public class PoseData
 
     public static PoseData? Create(BitmapSource thumbnailSource, IReadOnlyCollection<Frame> frames)
     {
-        var data = GetPoseDataMessage(frames);
-        if (data is null)
+        var poseDataMessage = GetPoseDataMessage(frames);
+        if (poseDataMessage is null)
         {
             Console.Error.WriteLine($"Failed creating PoseData: Invalid frame count: {frames.Count}");
             return null;
         }
 
-        var poseData = new PoseData();
+        var poseData = new PoseData()
+        {
+            _frames = frames
+        };
         var basePath = Path.Join(RootPath, poseData.Id);
 
         if (Directory.Exists(basePath))
@@ -105,7 +131,7 @@ public class PoseData
         try
         {
             using var output = File.Create(poseData._dataPath);
-            data.WriteTo(new(output));
+            poseDataMessage.WriteTo(new(output));
         }
         catch (Exception e)
         {
@@ -184,13 +210,36 @@ public class PoseData
         return poseData;
     }
 
+    private static IEnumerable<Frame>? GetPoseFrames(Messages.PoseData poseDataMessage)
+    {
+        if (poseDataMessage.Frames.Count != FrameCount)
+        {
+            return null;
+        }
+
+        var frames = from frameMessage in poseDataMessage.Frames
+                     select new Frame(
+                        from jointVector in frameMessage.JointVectors
+                        select new Vector3(jointVector.X, jointVector.Y, jointVector.Z)
+                     );
+
+        return frames;
+    }
+
     public record Frame
     {
+        private static readonly int JointCount = JointTypes.All.Count;
         public readonly IEnumerable<Vector3> JointVectors;
 
-        public Frame(Skeleton skeleton)
+        public Frame(IEnumerable<Vector3> jointVectors)
         {
-            JointVectors = [.. skeleton.GetNormalizedJointVectors()];
+            var jointCount = jointVectors.Count();
+            if (jointCount != JointCount)
+            {
+                throw new ArgumentException($"Expected {JointCount} joint vectors, but got {jointCount}.");
+            }
+
+            JointVectors = jointVectors;
         }
     }
 }

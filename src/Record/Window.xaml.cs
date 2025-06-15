@@ -244,7 +244,8 @@ public partial class Window : System.Windows.Window
             var skeleton = await tcs.Task;
             if (skeleton.HasValue)
             {
-                frames[i] = new(skeleton.Value);
+                var jointVectors = skeleton.Value.GetNormalizedJointVectors();
+                frames[i] = new(jointVectors);
                 i++;
 
                 _dataSource.ProgressValue = (double)i / PoseData.FrameCount;
