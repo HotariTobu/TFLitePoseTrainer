@@ -204,14 +204,44 @@ public partial class Window : System.Windows.Window
     private async void RecordPose()
     {
         Debug.Assert(_dataSource.CaptureImage is not null);
+        Debug.Assert(_trackingLoop is not null);
 
         _dataSource.IsRecording = true;
 
+        var frames = new PoseData.Frame[PoseData.FrameCount];
 
-        //await Task.Delay(5000);
+        for (var i = 0; i < PoseData.FrameCount;)
+        {
+            var tcs = new TaskCompletionSource<Skeleton?>();
 
+            void SetResult(BodyFrame bodyFrame)
+            {
+                if (bodyFrame.BodyCount == 0)
+                {
+                    tcs.TrySetResult(null);
+                }
+                else
+                {
+                    bodyFrame.GetBodySkeleton(0, out var skeleton);
+                    tcs.TrySetResult(skeleton);
+                }
 
-        var poseData = PoseData.Create(_dataSource.CaptureImage);
+                _trackingLoop.BodyFrameReady -= SetResult;
+            }
+
+            _trackingLoop.BodyFrameReady += SetResult;
+
+            var skeleton = await tcs.Task;
+            if (skeleton.HasValue)
+            {
+                frames[i] = new(skeleton.Value);
+                i++;
+
+                _dataSource.ProgressValue = (double)i / PoseData.FrameCount;
+            }
+        }
+
+        var poseData = PoseData.Create(_dataSource.CaptureImage, frames);
         if (poseData is null)
         {
             MessageBox.Show("Failed creating pose data");
@@ -223,6 +253,7 @@ public partial class Window : System.Windows.Window
 
         _dataSource.CanStartRecording = true;
         _dataSource.IsRecording = false;
+        _dataSource.ProgressValue = 0.0;
     }
 
     private static async Task CheckRuntime()

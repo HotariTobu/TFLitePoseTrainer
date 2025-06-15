@@ -1,10 +1,17 @@
 using System.IO;
+using System.Numerics;
 using System.Windows.Media.Imaging;
+
+using K4AdotNet.BodyTracking;
+
+using TFLitePoseTrainer.Extensions;
 
 namespace TFLitePoseTrainer.Data;
 
 public class PoseData
 {
+    public static readonly int FrameCount = 2000;
+
     private static readonly string RootPath = Path.GetFullPath(@"pose-data");
     private static readonly string ThumbnailPathFormat = Path.Join("{0}", "thumbnail.png");
     private static readonly string LabelPathFormat = Path.Join("{0}", "label.txt");
@@ -53,8 +60,15 @@ public class PoseData
         }
     }
 
-    public static PoseData? Create(BitmapSource thumbnailSource)
+    public static PoseData? Create(BitmapSource thumbnailSource, IReadOnlyCollection<Frame> frames)
     {
+        var data = GetPoseDataMessage(frames);
+        if (data is null)
+        {
+            Console.Error.WriteLine($"Failed creating PoseData: Invalid frame count: {frames.Count}");
+            return null;
+        }
+
         var poseData = new PoseData();
         var basePath = Path.Join(RootPath, poseData.Id);
 
@@ -85,6 +99,17 @@ public class PoseData
         catch (Exception e)
         {
             Console.Error.WriteLine($"Failed creating PoseData: Failed writing thumbnail: {e}");
+            return null;
+        }
+
+        try
+        {
+            using var output = File.Create(poseData._dataPath);
+            data.WriteTo(new(output));
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Failed creating PoseData: Failed writing data: {e}");
             return null;
         }
 
@@ -128,6 +153,44 @@ public class PoseData
         {
             Console.Error.WriteLine($"Failed listing PoseData: {e}");
             return null;
+        }
+    }
+
+    private static Messages.PoseData? GetPoseDataMessage(IReadOnlyCollection<Frame> frames)
+    {
+        if (frames.Count != FrameCount)
+        {
+            return null;
+        }
+        var poseData = new Messages.PoseData();
+
+        foreach (var frame in frames)
+        {
+            var poseFrame = new Messages.PoseFrame();
+
+            foreach (var jointVector in frame.JointVectors)
+            {
+                poseFrame.JointVectors.Add(new Messages.Vector3
+                {
+                    X = jointVector.X,
+                    Y = jointVector.Y,
+                    Z = jointVector.Z
+                });
+            }
+
+            poseData.Frames.Add(poseFrame);
+        }
+
+        return poseData;
+    }
+
+    public record Frame
+    {
+        public readonly IEnumerable<Vector3> JointVectors;
+
+        public Frame(Skeleton skeleton)
+        {
+            JointVectors = [.. skeleton.GetNormalizedJointVectors()];
         }
     }
 }

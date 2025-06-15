@@ -80,6 +80,23 @@ internal class DataSource : SharedWPF.ViewModelBase
     }
 
     #endregion
+    #region == ProgressValue ==
+
+    private double _progressValue;
+    public double ProgressValue
+    {
+        get => _progressValue;
+        set
+        {
+            if (_progressValue != value)
+            {
+                _progressValue = value;
+                RaisePropertyChanged(nameof(ProgressValue));
+            }
+        }
+    }
+
+    #endregion
 
     public class SkeletonItem(BodyId bodyId, Skeleton skeleton) : SharedWPF.ViewModelBase
     {

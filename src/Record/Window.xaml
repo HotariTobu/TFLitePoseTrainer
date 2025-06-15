@@ -14,6 +14,9 @@
     <Window.DataContext>
         <local_record:DataSource/>
     </Window.DataContext>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo ProgressState="Normal" ProgressValue="{Binding ProgressValue}"/>
+    </Window.TaskbarItemInfo>
 
     <Grid>
         <Image Source="{Binding CaptureImage}"
