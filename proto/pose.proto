@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "TFLitePoseTrainer.Messages";
+
+message Vector3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message PoseFrame {
+    repeated Vector3 joint_vectors = 1;
+}
+
+message PoseData {
+    repeated PoseFrame frames = 1;
+}
