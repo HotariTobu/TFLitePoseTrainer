@@ -8,7 +8,6 @@ public class ModelData
     private static readonly string LabelPathFormat = Path.Join("{0}", "label.txt");
     private static readonly string DataPathFormat = Path.Join("{0}", "data");
 
-
     static ModelData()
     {
         Directory.CreateDirectory(RootPath);
