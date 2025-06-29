@@ -24,7 +24,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource HeaderStyle}">
-                    2. Select poses
+                    Poses
                 </TextBlock>
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
