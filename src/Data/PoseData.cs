@@ -2,6 +2,8 @@ using System.IO;
 using System.Numerics;
 using System.Windows.Media.Imaging;
 
+using Google.Protobuf;
+
 using TFLitePoseTrainer.Interfaces;
 
 namespace TFLitePoseTrainer.Data;
@@ -81,8 +83,6 @@ public class PoseData
 
     public static PoseData? Create(BitmapSource thumbnailSource, IPoseSample sample)
     {
-        var poseSampleMessage = ToMessage(sample);
-
         var poseData = new PoseData()
         {
             _sample = sample
@@ -121,8 +121,9 @@ public class PoseData
 
         try
         {
+            var poseSampleMessage = ToMessage(sample);
             using var output = File.Create(poseData._dataPath);
-            poseSampleMessage.WriteTo(new(output));
+            poseSampleMessage.WriteTo(output);
         }
         catch (Exception e)
         {
