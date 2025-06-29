@@ -1,5 +1,3 @@
-using System.Windows.Media;
-
 using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
