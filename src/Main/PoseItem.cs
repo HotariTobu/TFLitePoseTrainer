@@ -8,12 +8,12 @@ public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
 {
     private readonly PoseData _poseData = poseData;
 
-    #region === ThumbnailSource ===
+    #region == ThumbnailSource ==
 
     public ImageSource ThumbnailSource { get; init; } = poseData.GetThumbnailSource();
 
     #endregion
-    #region === Label ===
+    #region == Label ==
 
     private string _label = poseData.Label ?? poseData.Id;
     public string Label
