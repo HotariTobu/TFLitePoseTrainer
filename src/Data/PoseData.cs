@@ -1,5 +1,4 @@
 using System.IO;
-using System.Numerics;
 using System.Windows.Media.Imaging;
 
 using Google.Protobuf;
@@ -11,9 +10,10 @@ namespace TFLitePoseTrainer.Data;
 public class PoseData
 {
     private static readonly string RootPath = Path.GetFullPath(@"pose-data");
-    private static readonly string ThumbnailPathFormat = Path.Join("{0}", "thumbnail.png");
-    private static readonly string LabelPathFormat = Path.Join("{0}", "label.txt");
-    private static readonly string DataPathFormat = Path.Join("{0}", "data");
+    private static string DirectoryPathFormat(string id) => Path.Join(RootPath, id);
+    private static string ThumbnailPathFormat(string directoryPath) => Path.Join(directoryPath, "thumbnail.png");
+    private static string LabelPathFormat(string directoryPath) => Path.Join(directoryPath, "label.txt");
+    private static string DataPathFormat(string directoryPath) => Path.Join(directoryPath, "data");
 
     static PoseData()
     {
@@ -23,11 +23,11 @@ public class PoseData
     public readonly string Id;
     public readonly DateTime CreatedAt;
 
+    private readonly string _directoryPath;
     private readonly string _thumbnailPath;
     private readonly string _labelPath;
-    private readonly string _dataPath;
-    private IPoseSample? _sample;
 
+    public string DataPath { get; }
     public string? Label { get; private set; }
 
     private PoseData() : this(Guid.NewGuid().ToString(), DateTime.Now) { }
@@ -37,34 +37,14 @@ public class PoseData
         Id = id;
         CreatedAt = createdAt;
 
-        _thumbnailPath = Path.Join(RootPath, string.Format(ThumbnailPathFormat, id));
-        _labelPath = Path.Join(RootPath, string.Format(LabelPathFormat, id));
-        _dataPath = Path.Join(RootPath, string.Format(DataPathFormat, id));
+        _directoryPath = DirectoryPathFormat(id);
+        _thumbnailPath = ThumbnailPathFormat(_directoryPath);
+        _labelPath = LabelPathFormat(_directoryPath);
+
+        DataPath = DataPathFormat(_directoryPath);
     }
 
     public BitmapSource GetThumbnailSource() => new BitmapImage(new(_thumbnailPath));
-
-    public IPoseSample? Sample
-    {
-        get
-        {
-            if (_sample is null)
-            {
-                try
-                {
-                    using var input = File.OpenRead(_dataPath);
-                    var poseSampleMessage = Messages.PoseSample.Parser.ParseFrom(input);
-                    _sample = FromMessage(poseSampleMessage);
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine($"Failed reading pose data: {e}");
-                }
-            }
-
-            return _sample;
-        }
-    }
 
     public bool UpdateLabel(string label)
     {
@@ -83,13 +63,9 @@ public class PoseData
 
     public static PoseData? Create(BitmapSource thumbnailSource, IPoseSample sample)
     {
-        var poseData = new PoseData()
-        {
-            _sample = sample
-        };
-        var basePath = Path.Join(RootPath, poseData.Id);
+        var poseData = new PoseData();
 
-        if (Directory.Exists(basePath))
+        if (Directory.Exists(poseData._directoryPath))
         {
             Console.Error.WriteLine($"Failed creating PoseData: Exist id: {poseData.Id}");
             return null;
@@ -97,7 +73,7 @@ public class PoseData
 
         try
         {
-            Directory.CreateDirectory(basePath);
+            Directory.CreateDirectory(poseData._directoryPath);
         }
         catch (Exception e)
         {
@@ -122,7 +98,7 @@ public class PoseData
         try
         {
             var poseSampleMessage = ToMessage(sample);
-            using var output = File.Create(poseData._dataPath);
+            using var output = File.Create(poseData.DataPath);
             poseSampleMessage.WriteTo(output);
         }
         catch (Exception e)
@@ -196,24 +172,5 @@ public class PoseData
         }
 
         return poseData;
-    }
-
-    private static PoseSample? FromMessage(Messages.PoseSample poseSampleMessage)
-    {
-        try
-        {
-            return new PoseSample(
-                from frameMessage in poseSampleMessage.Frames
-                select new PoseFrame(
-                    from jointVector in frameMessage.JointVectors
-                    select new Vector3(jointVector.X, jointVector.Y, jointVector.Z)
-                )
-            );
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Failed parsing pose frames: {e}");
-            return null;
-        }
     }
 }

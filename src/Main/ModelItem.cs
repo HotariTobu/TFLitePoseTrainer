@@ -4,8 +4,6 @@ namespace TFLitePoseTrainer.Main;
 
 public class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
 {
-    private readonly ModelData _modelData = modelData;
-
     #region == Label ==
 
     private string _label = modelData.Label ?? modelData.Id;
@@ -14,7 +12,7 @@ public class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
         get => _label;
         set
         {
-            if (_modelData.UpdateLabel(value))
+            if (modelData.UpdateLabel(value))
             {
                 _label = value;
                 RaisePropertyChanged(nameof(Label));
@@ -23,4 +21,23 @@ public class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
     }
 
     #endregion
+    #region == ProgressValue ==
+
+    private float _progressValue;
+    public float ProgressValue
+    {
+        get => _progressValue;
+        set
+        {
+            if (_progressValue != value)
+            {
+                _progressValue = value;
+                RaisePropertyChanged(nameof(ProgressValue));
+            }
+        }
+    }
+
+    #endregion
+
+    public Exception? Delete() => modelData.Delete();
 }

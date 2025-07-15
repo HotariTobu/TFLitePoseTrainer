@@ -109,23 +109,8 @@ public partial class Window : System.Windows.Window
 
     private void OnAddModelButtonClicked(object sender, RoutedEventArgs e)
     {
-        var selectedPoseItems = _dataSource.SelectedPoseItems.ToArray();
-
-        // TODO: Implement training logic
-
-        var modelData = ModelData.Create();
-        if (modelData is null)
-        {
-            MessageBox.Show("Failed creating model data");
-            return;
-        }
-
-        var selectedPoseLabels = selectedPoseItems.Select(p => p.Label);
-        var modelItem = new ModelItem(modelData)
-        {
-            Label = GetInitialModelLabel(selectedPoseLabels)
-        };
-        _dataSource.ModelItems.Add(modelItem);
+        var selectedPoseItems = _dataSource.SelectedPoseItems.ToList();
+        AddModelItem(selectedPoseItems);
     }
 
     private void OnDeleteModelButtonClicked(object sender, RoutedEventArgs e)
@@ -140,7 +125,68 @@ public partial class Window : System.Windows.Window
             return;
         }
 
+        var exception = RemoveModelItem(modelItem);
+        if (exception is not null)
+        {
+            throw new Exception("Failed deleting model", exception);
+        }
+    }
+
+    private async void AddModelItem(IReadOnlyCollection<PoseItem> poseItems)
+    {
+        if (poseItems.Count < 2)
+        {
+            MessageBox.Show("Please select at least two poses to train a model.");
+            return;
+        }
+
+        var (modelData, exception) = ModelData.Create();
+        if (modelData is null || exception is not null)
+        {
+            throw new Exception("Failed creating model data", exception);
+        }
+
+        var poseLabels = poseItems.Select(p => p.Label);
+        var modelItem = new ModelItem(modelData)
+        {
+            Label = GetInitialModelLabel(poseLabels)
+        };
+
+        _dataSource.ModelItems.Add(modelItem);
+
+        var poseDataPaths = poseItems.Select(p => p.DataPath);
+        exception = await Trainer.Train(modelData.DataPath, poseDataPaths,
+         (progress) => modelItem.ProgressValue = progress);
+
+        if (exception is null)
+        {
+            modelItem.ProgressValue = 0;
+        }
+        else
+        {
+            var removeException = RemoveModelItem(modelItem);
+            if (removeException is null)
+            {
+                throw new Exception("Failed training model", exception);
+            }
+            else
+            {
+                throw new AggregateException("Failed training model and deleting model", exception, removeException);
+            }
+        }
+    }
+
+    private Exception? RemoveModelItem(ModelItem modelItem)
+    {
+        var exception = modelItem.Delete();
+        if (exception is not null)
+        {
+            return exception;
+        }
+
         _dataSource.ModelItems.Remove(modelItem);
+
+        return null;
     }
 
     private static string GetInitialPoseLabel(IEnumerable<string> poseLabels)

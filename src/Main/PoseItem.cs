@@ -6,11 +6,11 @@ namespace TFLitePoseTrainer.Main;
 
 public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
 {
-    private readonly PoseData _poseData = poseData;
+    public string DataPath => poseData.DataPath;
 
     #region == ThumbnailSource ==
 
-    public ImageSource ThumbnailSource { get; init; } = poseData.GetThumbnailSource();
+    public ImageSource ThumbnailSource { get; } = poseData.GetThumbnailSource();
 
     #endregion
     #region == Label ==
@@ -21,7 +21,7 @@ public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
         get => _label;
         set
         {
-            if (_poseData.UpdateLabel(value))
+            if (poseData.UpdateLabel(value))
             {
                 _label = value;
                 RaisePropertyChanged(nameof(Label));

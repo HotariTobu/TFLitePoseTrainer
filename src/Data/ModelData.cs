@@ -5,8 +5,9 @@ namespace TFLitePoseTrainer.Data;
 public class ModelData
 {
     private static readonly string RootPath = Path.GetFullPath(@"model-data");
-    private static readonly string LabelPathFormat = Path.Join("{0}", "label.txt");
-    private static readonly string DataPathFormat = Path.Join("{0}", "data");
+    private static string DirectoryPathFormat(string id) => Path.Join(RootPath, id);
+    private static string LabelPathFormat(string directoryPath) => Path.Join(directoryPath, "label.txt");
+    private static string DataPathFormat(string directoryPath) => Path.Join(directoryPath, "data");
 
     static ModelData()
     {
@@ -16,9 +17,10 @@ public class ModelData
     public readonly string Id;
     public readonly DateTime CreatedAt;
 
+    private readonly string _directoryPath;
     private readonly string _labelPath;
-    private readonly string _dataPath;
 
+    public string DataPath { get; }
     public string? Label { get; private set; }
 
     private ModelData() : this(Guid.NewGuid().ToString(), DateTime.Now) { }
@@ -28,8 +30,10 @@ public class ModelData
         Id = id;
         CreatedAt = createdAt;
 
-        _labelPath = Path.Join(RootPath, string.Format(LabelPathFormat, id));
-        _dataPath = Path.Join(RootPath, string.Format(DataPathFormat, id));
+        _directoryPath = DirectoryPathFormat(id);
+        _labelPath = LabelPathFormat(_directoryPath);
+
+        DataPath = DataPathFormat(_directoryPath);
     }
 
     public bool UpdateLabel(string label)
@@ -47,28 +51,38 @@ public class ModelData
         }
     }
 
-    public static ModelData? Create()
+    public Exception? Delete()
+    {
+        try
+        {
+            Directory.Delete(_directoryPath, true);
+            return null;
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
+    }
+
+    public static (ModelData?, Exception?) Create()
     {
         var modelData = new ModelData();
-        var basePath = Path.Join(RootPath, modelData.Id);
 
-        if (Directory.Exists(basePath))
+        if (Directory.Exists(modelData._directoryPath))
         {
-            Console.Error.WriteLine($"Failed creating ModelData: Exist id: {modelData.Id}");
-            return null;
+            return (null, new Exception($"Exist id: {modelData.Id}"));
         }
 
         try
         {
-            Directory.CreateDirectory(basePath);
+            Directory.CreateDirectory(modelData._directoryPath);
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed creating ModelData: Failed creating directory: {e}");
-            return null;
+            return (null, new Exception($"Failed creating directory", e));
         }
 
-        return modelData;
+        return (modelData, null);
     }
 
     public static IEnumerable<ModelData>? List()
