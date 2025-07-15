@@ -180,6 +180,8 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
+                            <ProgressBar Style="{StaticResource ModelItemProgressBarStyle}"
+                                         Value="{Binding ProgressValue}"/>
                             <TextBlock Text="{Binding Label}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
@@ -202,6 +204,8 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="5,2">
+                            <ProgressBar Style="{StaticResource ModelItemProgressBarStyle}"
+                                         Value="{Binding ProgressValue}"/>
                             <Canvas>
                                 <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
                                         Tag="{Binding}"

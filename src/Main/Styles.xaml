@@ -61,4 +61,21 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="ModelItemProgressBarStyle" TargetType="ProgressBar">
+        <Setter Property="Foreground" Value="Tomato"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Rectangle x:Name="PART_Track"/>
+                        <Rectangle x:Name="PART_Indicator"
+                                HorizontalAlignment="Left"
+                                Fill="{TemplateBinding Foreground}">
+                        </Rectangle>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
