@@ -16,6 +16,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
   <!-- <ItemGroup Condition="'$(Devices)' != 'Femto'">
     <PackageReference Include="K4AdotNet" Version="1.4.17" />
   </ItemGroup>
@@ -26,6 +29,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="trainer\message\*.py" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="trainer\.python-version" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="trainer\main.py" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="trainer\pyproject.toml" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="trainer\setup.sh" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="trainer\uv.lock" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
