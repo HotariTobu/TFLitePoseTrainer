@@ -1,8 +1,18 @@
 {
     "cSpell.words": [
         "bgra",
+        "buildtransitive",
+        "contentfiles",
+        "crossentropy",
+        "cuda",
         "femto",
         "k4adotnet",
+        "keras",
+        "numpy",
+        "pyproject",
+        "relu",
+        "softmax",
+        "tflite",
         "unbinned"
     ],
 
