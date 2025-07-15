@@ -30,4 +30,6 @@ public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
     }
 
     #endregion
+
+    public Exception? Delete() => poseData.Delete();
 }

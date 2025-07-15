@@ -104,7 +104,11 @@ public partial class Window : System.Windows.Window
             return;
         }
 
-        _dataSource.PoseItems.Remove(poseItem);
+        var exception = RemovePoseItem(poseItem);
+        if (exception is not null)
+        {
+            throw new Exception("Failed deleting pose", exception);
+        }
     }
 
     private void OnAddModelButtonClicked(object sender, RoutedEventArgs e)
@@ -174,6 +178,19 @@ public partial class Window : System.Windows.Window
                 throw new AggregateException("Failed training model and deleting model", exception, removeException);
             }
         }
+    }
+
+    private Exception? RemovePoseItem(PoseItem poseItem)
+    {
+        var exception = poseItem.Delete();
+        if (exception is not null)
+        {
+            return exception;
+        }
+
+        _dataSource.PoseItems.Remove(poseItem);
+
+        return null;
     }
 
     private Exception? RemoveModelItem(ModelItem modelItem)

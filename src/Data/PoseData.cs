@@ -61,6 +61,19 @@ public class PoseData
         }
     }
 
+    public Exception? Delete()
+    {
+        try
+        {
+            Directory.Delete(_directoryPath, true);
+            return null;
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
+    }
+
     public static PoseData? Create(BitmapSource thumbnailSource, IPoseSample sample)
     {
         var poseData = new PoseData();
