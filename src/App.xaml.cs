@@ -7,6 +7,21 @@ namespace TFLitePoseTrainer;
 
 public partial class App : Application
 {
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+        SetupTrainer();
+    }
+
+    private static async void SetupTrainer()
+    {
+        var exception = await Trainer.Setup();
+        if (exception is not null)
+        {
+            throw new Exception("Failed to setup trainer", exception);
+        }
+    }
+
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         Console.Error.WriteLine(e.Exception);
