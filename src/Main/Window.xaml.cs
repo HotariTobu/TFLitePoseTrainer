@@ -111,6 +111,12 @@ public partial class Window : System.Windows.Window
         }
     }
 
+    private void OnReviewModelButtonClicked(object sender, RoutedEventArgs e)
+    {
+        var selectedModelItem = _dataSource.SelectedModelItems.ToList();
+        ReviewModel(selectedModelItem);
+    }
+
     private void OnAddModelButtonClicked(object sender, RoutedEventArgs e)
     {
         var selectedPoseItems = _dataSource.SelectedPoseItems.ToList();
@@ -134,6 +140,19 @@ public partial class Window : System.Windows.Window
         {
             throw new Exception("Failed deleting model", exception);
         }
+    }
+
+    private void ReviewModel(IReadOnlyCollection<ModelItem> modelItems)
+    {
+        if (modelItems.Count != 1)
+        {
+            MessageBox.Show("Please select only one model to review.");
+            return;
+        }
+
+        var modelItem = modelItems.First();
+
+        throw new NotImplementedException();
     }
 
     private async void AddModelItem(IReadOnlyCollection<PoseItem> poseItems)

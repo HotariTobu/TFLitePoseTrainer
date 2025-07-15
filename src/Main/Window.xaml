@@ -123,7 +123,8 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Bottom">
-                    <Button Content="👀"/>
+                    <Button Content="👀"
+                            Click="OnReviewModelButtonClicked"/>
                     <Button Content="➕"
                             Click="OnAddModelButtonClicked">
                     </Button>
@@ -133,7 +134,13 @@
             </Grid>
 
             <ListBox Style="{StaticResource ModelsControlStyle}"
-                     ItemsSource="{Binding ModelItems}">
+                     ItemsSource="{Binding ModelItems}"
+                     SelectionMode="Multiple">
+                <b:Interaction.Behaviors>
+                    <local_main:ModelListBoxSelectionBehavior
+                        SelectedItems="{Binding SelectedModelItems}" />
+                </b:Interaction.Behaviors>
+
                 <ListBox.Visibility>
                     <Binding Path="IsEditingModels">
                         <Binding.Converter>
