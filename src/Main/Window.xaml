@@ -37,10 +37,6 @@
                 </StackPanel>
             </Grid>
 
-            <!--
-                記録されたポーズの一覧を表示する。
-                最初の要素は新たなポーズを記録するためのボタン。
-            -->
             <ListBox Style="{StaticResource PosesControlStyle}"
                      ItemsSource="{Binding PoseItems}"
                      SelectionMode="Multiple">
@@ -69,9 +65,6 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <!-- <CheckBox Name="selectionCheckBox"
-                                      IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
-                                      IsHitTestVisible="False"/> -->
                             <Image Grid.Row="0"
                                     Source="{Binding ThumbnailSource}"
                                     Stretch="Uniform"/>
@@ -80,12 +73,6 @@
                                        HorizontalAlignment="Center"
                                        Padding="1"/>
                         </Grid>
-
-                        <!-- <DataTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="False">
-                                <Setter TargetName="selectionCheckBox" Property="Visibility" Value="Hidden"/>
-                            </Trigger>
-                        </DataTemplate.Triggers> -->
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -139,23 +126,6 @@
                     <Button Content="👀"/>
                     <Button Content="➕"
                             Click="OnAddModelButtonClicked">
-                        <!-- <Button.IsEnabled>
-                            <MultiBinding>
-                                <MultiBinding.Converter>
-                                    <local_cv:BooleanAndMultiConverter/>
-                                </MultiBinding.Converter>
-                                <Binding Path="SelectedPoseItems">
-                                    <Binding.Converter>
-                                        <local_cv:CollectionIsEmptyConverter/>
-                                    </Binding.Converter>
-                                </Binding>
-                                <Binding Path="IsEditingPoses">
-                                    <Binding.Converter>
-                                        <local_cv:BooleanInverterConverter/>
-                                    </Binding.Converter>
-                                </Binding>
-                            </MultiBinding>
-                        </Button.IsEnabled> -->
                     </Button>
                     <ToggleButton Content="✏️"
                                   IsChecked="{Binding IsEditingModels, Mode=TwoWay}"/>
