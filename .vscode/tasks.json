@@ -39,11 +39,28 @@
         },
         {
             "label": "proto generate",
+            "dependsOn": [
+                "proto generate C#",
+                "proto generate Python"
+            ],
+        },
+        {
+            "label": "proto generate C#",
             "command": "~/.nuget/packages/google.protobuf.tools/3.31.1/tools/windows_x64/protoc.exe",
             "type": "shell",
             "args": [
                 "--proto_path=\"${workspaceFolder}/proto\"",
                 "--csharp_out=\"${workspaceFolder}/src/Messages\"",
+                "\"${workspaceFolder}/proto/pose_message.proto\""
+            ],
+        },
+        {
+            "label": "proto generate Python",
+            "command": "~/.nuget/packages/google.protobuf.tools/3.31.1/tools/windows_x64/protoc.exe",
+            "type": "shell",
+            "args": [
+                "--proto_path=\"${workspaceFolder}/proto\"",
+                "--python_out=\"${workspaceFolder}/src/Python/message\"",
                 "\"${workspaceFolder}/proto/pose_message.proto\""
             ],
         }
