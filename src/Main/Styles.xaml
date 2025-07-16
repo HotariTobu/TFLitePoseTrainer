@@ -63,15 +63,40 @@
     </Style>
 
     <Style x:Key="ModelItemProgressBarStyle" TargetType="ProgressBar">
-        <Setter Property="Foreground" Value="Tomato"/>
+        <Setter Property="Foreground" Value="LightGreen"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
+                    <Grid ClipToBounds="True">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Determinate"/>
+                                <VisualState x:Name="Indeterminate">
+                                    <Storyboard>
+                                        <PointAnimation Storyboard.TargetName="PART_Indicator"
+                                                        Storyboard.TargetProperty="(UIElement.RenderTransformOrigin)"
+                                                        RepeatBehavior="Forever"
+                                                        From="-1,-1"
+                                                To="2,2"
+                                                Duration="0:0:2">
+                                            <PointAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseInOut"/>
+                                            </PointAnimation.EasingFunction>
+                                        </PointAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="PART_Indicator"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="0.5" Duration="0"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
                         <Rectangle x:Name="PART_Track"/>
                         <Rectangle x:Name="PART_Indicator"
-                                HorizontalAlignment="Left"
-                                Fill="{TemplateBinding Foreground}">
+                                   HorizontalAlignment="Left"
+                                   Fill="{TemplateBinding Foreground}">
+                            <Rectangle.RenderTransform>
+                                <ScaleTransform/>
+                            </Rectangle.RenderTransform>
                         </Rectangle>
                     </Grid>
                 </ControlTemplate>

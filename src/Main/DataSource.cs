@@ -17,13 +17,11 @@ internal class DataSource : SharedWPF.ViewModelBase
     public ObservableCollection<PoseItem> PoseItems { get; } = [];
 
     #endregion
-
     #region == SelectedPoseItems ==
 
     public ObservableCollection<PoseItem> SelectedPoseItems { get; } = [];
 
     #endregion
-
     #region == IsEditingPoses ==
 
     private bool _isEditingPoses;
@@ -42,18 +40,22 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #endregion
 
+    #region == TrainingModelItems ==
+
+    public ObservableCollection<TrainingModelItem> TrainingModelItems { get; } = [];
+
+    #endregion
+
     #region == ModelItems ==
 
     public ObservableCollection<ModelItem> ModelItems { get; } = [];
 
     #endregion
-
     #region == SelectedModelItems ==
 
     public ObservableCollection<ModelItem> SelectedModelItems { get; } = [];
 
     #endregion
-
     #region == IsEditingModels ==
 
     private bool _isEditingModels;

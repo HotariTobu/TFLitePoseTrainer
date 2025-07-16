@@ -107,7 +107,7 @@ public partial class Window : System.Windows.Window
         var exception = RemovePoseItem(poseItem);
         if (exception is not null)
         {
-            throw new Exception("Failed deleting pose", exception);
+            throw new Exception($"Failed deleting pose: {exception.Message}", exception);
         }
     }
 
@@ -138,7 +138,7 @@ public partial class Window : System.Windows.Window
         var exception = RemoveModelItem(modelItem);
         if (exception is not null)
         {
-            throw new Exception("Failed deleting model", exception);
+            throw new Exception($"Failed deleting model: {exception.Message}", exception);
         }
     }
 
@@ -166,35 +166,37 @@ public partial class Window : System.Windows.Window
         var (modelData, exception) = ModelData.Create();
         if (modelData is null || exception is not null)
         {
-            throw new Exception("Failed creating model data", exception);
+            throw new Exception($"Failed creating model data: {exception?.Message}", exception);
         }
 
         var poseLabels = poseItems.Select(p => p.Label);
-        var modelItem = new ModelItem(modelData)
-        {
-            Label = GetInitialModelLabel(poseLabels)
-        };
+        var initialLabel = GetInitialModelLabel(poseLabels);
+        modelData.UpdateLabel(initialLabel);
 
-        _dataSource.ModelItems.Add(modelItem);
+        var trainingModelItem = new TrainingModelItem(modelData);
+        _dataSource.TrainingModelItems.Add(trainingModelItem);
 
         var poseDataPaths = poseItems.Select(p => p.DataPath);
         exception = await Trainer.Train(modelData.DataPath, poseDataPaths,
-         (progress) => modelItem.ProgressValue = progress);
+         (progress) => trainingModelItem.ProgressValue = progress);
+
+        _dataSource.TrainingModelItems.Remove(trainingModelItem);
 
         if (exception is null)
         {
-            modelItem.ProgressValue = 0;
+            var modelItem = new ModelItem(modelData);
+            _dataSource.ModelItems.Add(modelItem);
         }
         else
         {
-            var removeException = RemoveModelItem(modelItem);
-            if (removeException is null)
+            var deleteException = modelData.Delete();
+            if (deleteException is null)
             {
-                throw new Exception("Failed training model", exception);
+                throw new Exception($"Failed training model: {exception.Message}", exception);
             }
             else
             {
-                throw new AggregateException("Failed training model and deleting model", exception, removeException);
+                throw new AggregateException($"Failed training model: {exception.Message}, and deleting model: {deleteException.Message}", exception, deleteException);
             }
         }
     }

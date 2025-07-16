@@ -21,23 +21,6 @@ public class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
     }
 
     #endregion
-    #region == ProgressValue ==
-
-    private float _progressValue;
-    public float ProgressValue
-    {
-        get => _progressValue;
-        set
-        {
-            if (_progressValue != value)
-            {
-                _progressValue = value;
-                RaisePropertyChanged(nameof(ProgressValue));
-            }
-        }
-    }
-
-    #endregion
 
     public Exception? Delete() => modelData.Delete();
 }

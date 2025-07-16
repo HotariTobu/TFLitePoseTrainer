@@ -27,7 +27,7 @@ public static partial class Trainer
 
         var processInfo = new ProcessStartInfo
         {
-            FileName = "bash",
+            FileName = "sh",
             Arguments = "setup.sh",
             WorkingDirectory = trainerPath,
             UseShellExecute = false,
@@ -44,10 +44,14 @@ public static partial class Trainer
 
         await process.WaitForExitAsync();
 
+        var output = await process.StandardOutput.ReadToEndAsync();
+        var error = await process.StandardError.ReadToEndAsync();
+
+        Console.WriteLine(output);
+        Console.Error.WriteLine(error);
+
         if (process.ExitCode != 0)
         {
-            Console.WriteLine(await process.StandardOutput.ReadToEndAsync());
-            Console.Error.WriteLine(await process.StandardError.ReadToEndAsync());
             return new Exception($"Setup script failed with exit code {process.ExitCode}");
         }
 
