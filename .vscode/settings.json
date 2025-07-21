@@ -13,7 +13,8 @@
         "relu",
         "softmax",
         "tflite",
-        "unbinned"
+        "unbinned",
+        "viewbox"
     ],
 
     "files.exclude": {
