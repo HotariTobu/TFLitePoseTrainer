@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -16,6 +17,7 @@ public partial class Window : System.Windows.Window
 
     private readonly DataSource _dataSource;
     Record.Window? _recordWindow;
+    Review.Window? _reviewWindow;
 
     public Window()
     {
@@ -32,6 +34,7 @@ public partial class Window : System.Windows.Window
         base.OnClosing(e);
 
         _recordWindow?.CloseWithoutHiding();
+        _reviewWindow?.CloseWithoutHiding();
     }
 
     private async void InitializePoseItems()
@@ -72,40 +75,14 @@ public partial class Window : System.Windows.Window
 
     private async void InitializeSubWindows()
     {
-        await WaitForConnection();
+        await Task.WhenAll(WaitForConnection(), CheckRuntime(TrackerProcessingMode.GpuCuda));
 
-        var exception = await CheckRuntime(TrackerProcessingMode.GpuCuda);
-        if (exception is not null)
-        {
-            MessageBox.Show(exception.Message, "Body Tracking Not Available", MessageBoxButton.OK, MessageBoxImage.Error);
-            Application.Current.Shutdown(11);
-            return;
-        }
-
-        var captureParam = new CaptureLoop.Param(DeviceConfig);
-        CaptureLoop? captureLoop;
-        (captureLoop, exception) = await CaptureLoop.Create(captureParam);
-        if (captureLoop is null || exception is not null)
-        {
-            MessageBox.Show("Failed to create capture loop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            Application.Current.Shutdown(12);
-            return;
-        }
-
-        var trackingParam = new TrackingLoop.Param(captureLoop.Calibration);
-        TrackingLoop? trackingLoop;
-        (trackingLoop, exception) = TrackingLoop.Create(trackingParam);
-        if (trackingLoop is null || exception is not null)
-        {
-            MessageBox.Show("Failed to create tracking loop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            Application.Current.Shutdown(13);
-            return;
-        }
-
-        captureLoop.CaptureReady += trackingLoop.Enqueue;
+        var (captureLoop, trackingLoop) = await CreateLoops();
 
         _recordWindow = new(captureLoop, trackingLoop);
         _recordWindow.OnPoseRecorded += OnPoseRecorded;
+
+        _reviewWindow = new(captureLoop, trackingLoop);
     }
 
     private void OnAddPoseButtonClicked(object sender, RoutedEventArgs e)
@@ -116,8 +93,7 @@ public partial class Window : System.Windows.Window
             return;
         }
 
-        _recordWindow.Show();
-        _recordWindow.Activate();
+        _recordWindow.ShowAndActivate();
     }
 
     private void OnPoseRecorded(PoseData poseData)
@@ -182,6 +158,12 @@ public partial class Window : System.Windows.Window
 
     private void ReviewModel(IReadOnlyCollection<ModelItem> modelItems)
     {
+        if (_reviewWindow is null)
+        {
+            MessageBox.Show("Review window not initialized.");
+            return;
+        }
+
         if (modelItems.Count != 1)
         {
             MessageBox.Show("Please select only one model to review.");
@@ -190,7 +172,7 @@ public partial class Window : System.Windows.Window
 
         var modelItem = modelItems.First();
 
-        throw new NotImplementedException();
+        _reviewWindow.ShowAndActivate();
     }
 
     private async void AddModelItem(IReadOnlyCollection<PoseItem> poseItems)

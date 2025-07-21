@@ -16,15 +16,15 @@ class TrackingLoop : IDisposable
     private volatile bool _willStart;
     private volatile bool _willStop;
 
-    internal static (TrackingLoop?, Exception?) Create(Param param)
+    internal static Result<TrackingLoop> Create(Param param)
     {
         try
         {
-            return (new(param), null);
+            return new TrackingLoop(param);
         }
         catch (Exception e)
         {
-            return (null, e);
+            return e;
         }
     }
 

@@ -19,6 +19,12 @@ public abstract class SubWindow : System.Windows.Window
         Hide();
     }
 
+    public void ShowAndActivate()
+    {
+        Show();
+        Activate();
+    }
+
     public void CloseWithoutHiding()
     {
         _canClose = true;

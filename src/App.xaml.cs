@@ -3,6 +3,8 @@ using System.Data;
 using System.Windows;
 using System.Windows.Threading;
 
+using TFLitePoseTrainer.Exceptions;
+
 namespace TFLitePoseTrainer;
 
 public partial class App : Application
@@ -27,6 +29,12 @@ public partial class App : Application
         Console.Error.WriteLine(e.Exception);
         MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         e.Handled = true;
+
+        if (e.Exception is FatalException fatalException)
+        {
+            Shutdown(fatalException.ExitCode);
+            return;
+        }
 
         foreach (var window in Windows.Cast<Window>())
         {

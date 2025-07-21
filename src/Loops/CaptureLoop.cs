@@ -18,15 +18,15 @@ class CaptureLoop : IDisposable
     internal DeviceConfiguration DeviceConfig { get; }
     internal Calibration Calibration { get; }
 
-    internal static Task<(CaptureLoop?, Exception?)> Create(Param param) => Task.Run<(CaptureLoop?, Exception?)>(() =>
+    internal static Task<Result<CaptureLoop>> Create(Param param) => Task.Run<Result<CaptureLoop>>(() =>
     {
         try
         {
-            return (new(param), null);
+            return new CaptureLoop(param);
         }
         catch (Exception e)
         {
-            return (null, e);
+            return e;
         }
     });
 

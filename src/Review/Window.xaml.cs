@@ -14,7 +14,7 @@ using TFLitePoseTrainer.Extensions;
 using TFLitePoseTrainer.Helpers;
 using TFLitePoseTrainer.Loops;
 
-namespace TFLitePoseTrainer.Record;
+namespace TFLitePoseTrainer.Review;
 
 partial class Window : SubWindow
 {
@@ -132,78 +132,4 @@ partial class Window : SubWindow
             }
         });
     }
-
-    private void OnButtonClicked(object sender, RoutedEventArgs e)
-    {
-        _dataSource.CanStartRecording = false;
-    }
-
-    private void OnCountdownCompleted(object sender, EventArgs e)
-    {
-        RecordPose();
-    }
-
-    private async void RecordPose()
-    {
-        Debug.Assert(_dataSource.CaptureImage is not null);
-
-        _dataSource.IsRecording = true;
-
-        using var defer = new Defer();
-        defer.Disposed += () => _dataSource.CanStartRecording = true;
-        defer.Disposed += () => _dataSource.IsRecording = false;
-        defer.Disposed += () => _dataSource.ProgressValue = 0.0;
-
-        var frames = new PoseFrame[Constants.PoseFrameCount];
-
-        for (var i = 0; i < Constants.PoseFrameCount;)
-        {
-            if (!IsVisible)
-            {
-                return;
-            }
-
-            var tcs = new TaskCompletionSource<Skeleton?>();
-
-            void SetResult(BodyFrame bodyFrame)
-            {
-                if (bodyFrame.BodyCount == 0)
-                {
-                    tcs.TrySetResult(null);
-                }
-                else
-                {
-                    bodyFrame.GetBodySkeleton(0, out var skeleton);
-                    tcs.TrySetResult(skeleton);
-                }
-
-                _trackingLoop.BodyFrameReady -= SetResult;
-            }
-
-            _trackingLoop.BodyFrameReady += SetResult;
-
-            var skeleton = await tcs.Task;
-            if (skeleton.HasValue)
-            {
-                var jointVectors = skeleton.Value.GetNormalizedJointVectors();
-                frames[i] = new(jointVectors);
-                i++;
-
-                _dataSource.ProgressValue = (double)i / Constants.PoseFrameCount;
-            }
-        }
-
-        var sample = new PoseSample(frames);
-        var poseData = PoseData.Create(_dataSource.CaptureImage, sample);
-        if (poseData is null)
-        {
-            MessageBox.Show("Failed creating pose data");
-        }
-        else
-        {
-            OnPoseRecorded?.Invoke(poseData);
-        }
-    }
-
-    public event Action<PoseData>? OnPoseRecorded;
 }

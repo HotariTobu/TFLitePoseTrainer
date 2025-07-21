@@ -4,6 +4,9 @@ using K4AdotNet;
 using K4AdotNet.BodyTracking;
 using K4AdotNet.Sensor;
 
+using TFLitePoseTrainer.Exceptions;
+using TFLitePoseTrainer.Loops;
+
 namespace TFLitePoseTrainer.Main;
 
 partial class Window : System.Windows.Window
@@ -37,16 +40,45 @@ partial class Window : System.Windows.Window
         }
     }
 
-    private static Task<Exception?> CheckRuntime(TrackerProcessingMode mode) => Task.Run(() =>
+    private static async Task CheckRuntime(TrackerProcessingMode mode)
+    {
+        var exception = await Task.Run<Exception?>(() =>
         {
             try
             {
                 Sdk.TryInitializeBodyTrackingRuntime(mode, out var message);
-                return message is null ? null : new Exception(message);
+                return message is null ? null : new(message);
             }
             catch (Exception e)
             {
-                return new Exception($"Failed to check body tracking runtime availability", e);
+                return new($"Failed to check body tracking runtime availability", e);
             }
         });
+
+        if (exception is null)
+        {
+            return;
+        }
+
+        throw new FatalException(2, $"Body tracking runtime is not available", exception);
+    }
+
+    private static async Task<(CaptureLoop, TrackingLoop)> CreateLoops()
+    {
+        var captureLoopResult = await CaptureLoop.Create(new(DeviceConfig));
+        if (!captureLoopResult.TryGetValue(out var captureLoop))
+        {
+            throw new FatalException(3, $"Failed creating capture loop", captureLoopResult.GetException());
+        }
+
+        var trackingLoopResult = TrackingLoop.Create(new(captureLoop.Calibration));
+        if (!trackingLoopResult.TryGetValue(out var trackingLoop))
+        {
+            throw new FatalException(4, $"Failed creating tracking loop", trackingLoopResult.GetException());
+        }
+
+        captureLoop.CaptureReady += trackingLoop.Enqueue;
+
+        return (captureLoop, trackingLoop);
+    }
 }
