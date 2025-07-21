@@ -2,7 +2,10 @@
 using System.Text.RegularExpressions;
 using System.Windows;
 
+using K4AdotNet.BodyTracking;
+
 using TFLitePoseTrainer.Data;
+using TFLitePoseTrainer.Loops;
 
 namespace TFLitePoseTrainer.Main;
 
@@ -12,7 +15,7 @@ public partial class Window : System.Windows.Window
     private static readonly Regex PoseLabelRegex = new(@"Pose (\d+)");
 
     private readonly DataSource _dataSource;
-    private readonly Record.Window _recordWindow;
+    Record.Window? _recordWindow;
 
     public Window()
     {
@@ -21,17 +24,14 @@ public partial class Window : System.Windows.Window
 
         InitializePoseItems();
         InitializeModelItems();
-
-        _recordWindow = new();
-        _recordWindow.OnPoseRecorded += OnPoseRecorded;
+        InitializeSubWindows();
     }
 
     protected override void OnClosing(CancelEventArgs e)
     {
         base.OnClosing(e);
 
-        _recordWindow.CanClose = true;
-        _recordWindow.Close();
+        _recordWindow?.CloseWithoutHiding();
     }
 
     private async void InitializePoseItems()
@@ -70,11 +70,47 @@ public partial class Window : System.Windows.Window
         }
     }
 
+    private async void InitializeSubWindows()
+    {
+        await WaitForConnection();
+
+        var exception = await CheckRuntime(TrackerProcessingMode.GpuCuda);
+        if (exception is not null)
+        {
+            MessageBox.Show(exception.Message, "Body Tracking Not Available", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown(11);
+            return;
+        }
+
+        var captureParam = new CaptureLoop.Param(DeviceConfig);
+        CaptureLoop? captureLoop;
+        (captureLoop, exception) = await CaptureLoop.Create(captureParam);
+        if (captureLoop is null || exception is not null)
+        {
+            MessageBox.Show("Failed to create capture loop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown(12);
+            return;
+        }
+
+        var trackingParam = new TrackingLoop.Param(captureLoop.Calibration);
+        TrackingLoop? trackingLoop;
+        (trackingLoop, exception) = TrackingLoop.Create(trackingParam);
+        if (trackingLoop is null || exception is not null)
+        {
+            MessageBox.Show("Failed to create tracking loop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown(13);
+            return;
+        }
+
+        _recordWindow = new(captureLoop, trackingLoop);
+        _recordWindow.OnPoseRecorded += OnPoseRecorded;
+    }
+
     private void OnAddPoseButtonClicked(object sender, RoutedEventArgs e)
     {
-        if (!_recordWindow.CanShow)
+        if (_recordWindow is null)
         {
-            MessageBox.Show("Tracking service not initialized yet.", "Please Wait", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Record window not initialized.");
             return;
         }
 

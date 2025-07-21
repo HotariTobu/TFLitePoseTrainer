@@ -1,8 +1,6 @@
 using K4AdotNet.BodyTracking;
 using K4AdotNet.Sensor;
 
-using TFLitePoseTrainer.Extensions;
-
 namespace TFLitePoseTrainer.Loops;
 
 class TrackingLoop : IDisposable
@@ -18,16 +16,15 @@ class TrackingLoop : IDisposable
     private volatile bool _willStart;
     private volatile bool _willStop;
 
-    public static TrackingLoop? Create(Param param)
+    internal static (TrackingLoop?, Exception?) Create(Param param)
     {
         try
         {
-            return new(param);
+            return (new(param), null);
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to create TrackingLoop: {e}");
-            return null;
+            return (null, e);
         }
     }
 

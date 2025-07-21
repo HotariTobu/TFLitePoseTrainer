@@ -1,7 +1,5 @@
 using K4AdotNet.Sensor;
 
-using TFLitePoseTrainer.Extensions;
-
 namespace TFLitePoseTrainer.Loops;
 
 class CaptureLoop : IDisposable
@@ -11,45 +9,35 @@ class CaptureLoop : IDisposable
 
     private readonly LoopRunner _loopRunner;
     private readonly Device _device;
-    private readonly DeviceConfiguration _deviceConfig;
 
     private volatile bool _isStarting;
     private volatile bool _isStopping;
     private volatile bool _willStart;
     private volatile bool _willStop;
 
-    public static CaptureLoop? Create(Param param)
+    internal DeviceConfiguration DeviceConfig { get; }
+    internal Calibration Calibration { get; }
+
+    internal static Task<(CaptureLoop?, Exception?)> Create(Param param) => Task.Run<(CaptureLoop?, Exception?)>(() =>
     {
         try
         {
-            return new(param);
+            return (new(param), null);
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to create CaptureLoop: {e}");
-            return null;
+            return (null, e);
         }
-    }
+    });
 
     private CaptureLoop(Param param)
     {
         _loopRunner = new(LoopAction);
         _device = Device.Open(param.DeviceIndex);
-        _deviceConfig = param.DeviceConfig;
-    }
+        DeviceConfig = param.DeviceConfig;
 
-    public Calibration? GetCalibration()
-    {
-        try
-        {
-            _device.GetCalibration(_deviceConfig.DepthMode, _deviceConfig.ColorResolution, out var calibration);
-            return calibration;
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Failed to get calibration: {e}");
-            return null;
-        }
+        _device.GetCalibration(DeviceConfig.DepthMode, DeviceConfig.ColorResolution, out var calibration);
+        Calibration = calibration;
     }
 
     public void Dispose()
@@ -76,7 +64,7 @@ class CaptureLoop : IDisposable
 
         try
         {
-            _device.StartCameras(_deviceConfig);
+            _device.StartCameras(DeviceConfig);
             _loopRunner.Start();
         }
         catch (Exception e)
