@@ -163,13 +163,14 @@ public partial class Window : System.Windows.Window
             return;
         }
 
-        var (modelData, exception) = ModelData.Create();
+        var poseLabels = poseItems.Select(p => p.Label);
+
+        var (modelData, exception) = ModelData.Create(poseLabels);
         if (modelData is null || exception is not null)
         {
             throw new Exception($"Failed creating model data: {exception?.Message}", exception);
         }
 
-        var poseLabels = poseItems.Select(p => p.Label);
         var initialLabel = GetInitialModelLabel(poseLabels);
         modelData.UpdateLabel(initialLabel);
 

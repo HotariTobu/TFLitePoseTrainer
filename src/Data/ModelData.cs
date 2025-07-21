@@ -8,6 +8,7 @@ public class ModelData
     private static string DirectoryPathFormat(string id) => Path.Join(RootPath, id);
     private static string LabelPathFormat(string directoryPath) => Path.Join(directoryPath, "label.txt");
     private static string DataPathFormat(string directoryPath) => Path.Join(directoryPath, "data");
+    private static string PoseLabelsPathFormat(string directoryPath) => Path.Join(directoryPath, "pose-labels.txt");
 
     static ModelData()
     {
@@ -19,9 +20,11 @@ public class ModelData
 
     private readonly string _directoryPath;
     private readonly string _labelPath;
+    private readonly string _poseLabelsPath;
 
     public string DataPath { get; }
     public string? Label { get; private set; }
+    public IReadOnlyList<string> PoseLabels { get; private set; } = [];
 
     private ModelData() : this(Guid.NewGuid().ToString(), DateTime.Now) { }
 
@@ -32,6 +35,7 @@ public class ModelData
 
         _directoryPath = DirectoryPathFormat(id);
         _labelPath = LabelPathFormat(_directoryPath);
+        _poseLabelsPath = PoseLabelsPathFormat(_directoryPath);
 
         DataPath = DataPathFormat(_directoryPath);
     }
@@ -64,9 +68,12 @@ public class ModelData
         }
     }
 
-    public static (ModelData?, Exception?) Create()
+    public static (ModelData?, Exception?) Create(IEnumerable<string> poseLabels)
     {
-        var modelData = new ModelData();
+        var modelData = new ModelData()
+        {
+            PoseLabels = [.. poseLabels],
+        };
 
         if (Directory.Exists(modelData._directoryPath))
         {
@@ -80,6 +87,15 @@ public class ModelData
         catch (Exception e)
         {
             return (null, new Exception($"Failed creating directory", e));
+        }
+
+        try
+        {
+            File.WriteAllLines(modelData._poseLabelsPath, poseLabels);
+        }
+        catch (Exception e)
+        {
+            return (null, new Exception($"Failed storing pose labels", e));
         }
 
         return (modelData, null);
@@ -105,6 +121,15 @@ public class ModelData
                 if (File.Exists(modelData._labelPath))
                 {
                     modelData.Label = File.ReadAllText(modelData._labelPath);
+                }
+
+                if (File.Exists(modelData._poseLabelsPath))
+                {
+                    modelData.PoseLabels = File.ReadAllLines(modelData._poseLabelsPath);
+                }
+                else
+                {
+                    continue;
                 }
 
                 modelDataList.Add(modelData);
