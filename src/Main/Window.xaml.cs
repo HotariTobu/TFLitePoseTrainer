@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows;
 
 using K4AdotNet.BodyTracking;
 
 using TFLitePoseTrainer.Data;
-using TFLitePoseTrainer.Loops;
 
 namespace TFLitePoseTrainer.Main;
 

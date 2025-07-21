@@ -1,11 +1,6 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
-using K4AdotNet;
 using K4AdotNet.BodyTracking;
 using K4AdotNet.Sensor;
 

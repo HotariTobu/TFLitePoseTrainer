@@ -1,16 +1,8 @@
-﻿using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using System.Diagnostics;
 
-using K4AdotNet;
 using K4AdotNet.BodyTracking;
 using K4AdotNet.Sensor;
 
-using TFLitePoseTrainer.Data;
 using TFLitePoseTrainer.Extensions;
 using TFLitePoseTrainer.Helpers;
 using TFLitePoseTrainer.Loops;

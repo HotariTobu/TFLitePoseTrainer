@@ -1,5 +1,3 @@
-using System.Numerics;
-
 namespace TFLitePoseTrainer.Interfaces;
 
 public interface IPoseSample
