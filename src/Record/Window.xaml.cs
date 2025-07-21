@@ -34,7 +34,6 @@ partial class Window : SubWindow
         _dataSource.Calibration = _captureLoop.Calibration;
         _dataSource.CaptureImage = CaptureImageHelper.CreateRenderTarget(_captureLoop.DeviceConfig, this);
 
-        _captureLoop.CaptureReady += _trackingLoop.Enqueue;
         _captureLoop.CaptureReady += UpdateCaptureImage;
         _trackingLoop.BodyFrameReady += UpdateSkeleton;
     }
@@ -62,32 +61,17 @@ partial class Window : SubWindow
             return;
         }
 
-        var width = image.WidthPixels;
-        var height = image.HeightPixels;
-
-        var bufferSize = image.SizeBytes;
-        var stride = image.StrideBytes;
-
-        var buffer = Marshal.AllocHGlobal(bufferSize);
-        if (buffer == IntPtr.Zero)
+        var (renderer, exception) = CaptureImageHelper.Renderer.Create(image);
+        if (renderer is null || exception is not null)
         {
-            Console.Error.WriteLine("Failed to allocate memory for image buffer.");
+            Console.Error.WriteLine($"Failed to create renderer: {exception}");
             return;
-        }
-
-        unsafe
-        {
-            var src = image.Buffer.ToPointer();
-            var dst = buffer.ToPointer();
-            Buffer.MemoryCopy(src, dst, bufferSize, bufferSize);
         }
 
         Dispatcher.Invoke(() =>
         {
-            var rect = new Int32Rect(0, 0, width, height);
-            _dataSource.CaptureImage.WritePixels(rect, buffer, bufferSize, stride);
-
-            Marshal.FreeHGlobal(buffer);
+            renderer.Render(_dataSource.CaptureImage);
+            renderer.Dispose();
         });
     }
 

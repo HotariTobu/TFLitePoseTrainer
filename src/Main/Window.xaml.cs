@@ -102,6 +102,8 @@ public partial class Window : System.Windows.Window
             return;
         }
 
+        captureLoop.CaptureReady += trackingLoop.Enqueue;
+
         _recordWindow = new(captureLoop, trackingLoop);
         _recordWindow.OnPoseRecorded += OnPoseRecorded;
     }
