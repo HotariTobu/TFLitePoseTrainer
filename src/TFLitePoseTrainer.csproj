@@ -32,6 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Emgu.TF.Lite" Version="2.16.1.1623" />
+    <PackageReference Include="Emgu.TF.Lite.runtime.windows" Version="2.16.1.1623" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="trainer\message\*.py" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="trainer\.python-version" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="trainer\main.py" CopyToOutputDirectory="PreserveNewest" />

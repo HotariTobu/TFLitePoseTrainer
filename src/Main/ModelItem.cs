@@ -4,6 +4,9 @@ namespace TFLitePoseTrainer.Main;
 
 public class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
 {
+    public string DataPath => modelData.DataPath;
+    public IReadOnlyList<string> PoseLabels => modelData.PoseLabels;
+
     #region == Label ==
 
     private string _label = modelData.Label ?? modelData.Id;

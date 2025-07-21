@@ -7,6 +7,24 @@ namespace TFLitePoseTrainer.Review;
 
 internal class DataSource : SharedWPF.ViewModelBase
 {
+    #region == WindowTitle ==
+
+    private string _windowTitle = "";
+    public string WindowTitle
+    {
+        get => _windowTitle;
+        set
+        {
+            if (_windowTitle != value)
+            {
+                _windowTitle = value;
+                RaisePropertyChanged(nameof(WindowTitle));
+            }
+        }
+    }
+
+    #endregion
+
     #region == CaptureImage ==
 
     private WriteableBitmap? _captureImage;
@@ -42,6 +60,12 @@ internal class DataSource : SharedWPF.ViewModelBase
     #region == SkeletonItems ==
 
     public ObservableCollection<SkeletonItem> SkeletonItems { get; } = [];
+
+    #endregion
+
+    #region == InferredPoseLabels ==
+
+    public ObservableCollection<string> InferredPoseLabels { get; } = [];
 
     #endregion
 }

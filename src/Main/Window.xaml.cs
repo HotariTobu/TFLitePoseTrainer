@@ -172,6 +172,7 @@ public partial class Window : System.Windows.Window
 
         var modelItem = modelItems.First();
 
+        _reviewWindow.UpdateModel(modelItem.Label, modelItem.DataPath, modelItem.PoseLabels);
         _reviewWindow.ShowAndActivate();
     }
 

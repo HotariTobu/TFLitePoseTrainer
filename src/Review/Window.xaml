@@ -7,7 +7,7 @@
         xmlns:local_review="clr-namespace:TFLitePoseTrainer.Review"
         xmlns:local_ctrl="clr-namespace:TFLitePoseTrainer.Controls"
         mc:Ignorable="d"
-        Title="Click to Review a New Pose" Height="480" Width="800"
+        Title="{Binding WindowTitle}" Height="480" Width="800"
         Background="Black">
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml"/>
@@ -40,5 +40,25 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Viewbox>
+
+        <ItemsControl ItemsSource="{Binding InferredPoseLabels}"
+                      HorizontalContentAlignment="Stretch"
+                      VerticalContentAlignment="Stretch">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}"
+                        FontWeight="Bold"
+                        FontSize="100"
+                        Foreground="Red"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </local:SubWindow>

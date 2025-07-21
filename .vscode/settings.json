@@ -5,6 +5,7 @@
         "contentfiles",
         "crossentropy",
         "cuda",
+        "emgu",
         "femto",
         "k4adotnet",
         "keras",
