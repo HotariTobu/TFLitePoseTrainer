@@ -97,7 +97,7 @@ partial class Window : SubWindow
                 continue;
             }
 
-            Skeleton skeleton = default;
+            Skeleton skeleton;
 
             try
             {
