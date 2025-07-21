@@ -15,7 +15,7 @@ using TFLitePoseTrainer.Loops;
 
 namespace TFLitePoseTrainer.Record;
 
-public partial class Window : System.Windows.Window
+partial class Window : SubWindow
 {
     private static readonly DeviceConfiguration DeviceConfig = new()
     {
