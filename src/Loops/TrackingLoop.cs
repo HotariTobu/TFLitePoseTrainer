@@ -5,16 +5,16 @@ namespace TFLitePoseTrainer.Loops;
 
 class TrackingLoop : IDisposable
 {
-    public static readonly TrackerConfiguration DefaultTrackerConfig = TrackerConfiguration.Default;
-    public static readonly int Timeout = 500;
+    internal static readonly TrackerConfiguration DefaultTrackerConfig = TrackerConfiguration.Default;
+    internal static readonly int Timeout = 500;
 
-    private readonly LoopRunner _loopRunner;
-    private readonly Tracker _tracker;
+    readonly LoopRunner _loopRunner;
+    readonly Tracker _tracker;
 
-    private volatile bool _isStarting;
-    private volatile bool _isStopping;
-    private volatile bool _willStart;
-    private volatile bool _willStop;
+    volatile bool _isStarting;
+    volatile bool _isStopping;
+    volatile bool _willStart;
+    volatile bool _willStop;
 
     internal static Result<TrackingLoop> Create(Param param)
     {
@@ -28,7 +28,7 @@ class TrackingLoop : IDisposable
         }
     }
 
-    private TrackingLoop(Param param)
+    TrackingLoop(Param param)
     {
         _loopRunner = new(LoopAction);
         _tracker = new(param.Calibration, param.TrackerConfig);
@@ -40,7 +40,7 @@ class TrackingLoop : IDisposable
         _tracker.Dispose();
     }
 
-    public void Start()
+    internal void Start()
     {
         if (_isStarting)
         {
@@ -62,7 +62,7 @@ class TrackingLoop : IDisposable
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to start cameras: {e}");
+            ErrorOccurred?.Invoke(new("Failed to start cameras", e));
         }
 
         _isStarting = false;
@@ -74,7 +74,7 @@ class TrackingLoop : IDisposable
         }
     }
 
-    public void Stop()
+    internal void Stop()
     {
         if (_isStopping)
         {
@@ -96,7 +96,7 @@ class TrackingLoop : IDisposable
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to stop cameras: {e}");
+            ErrorOccurred?.Invoke(new("Failed to stop cameras", e));
         }
 
         _isStopping = false;
@@ -108,7 +108,7 @@ class TrackingLoop : IDisposable
         }
     }
 
-    public void Enqueue(Capture capture)
+    internal void Enqueue(Capture capture)
     {
         try
         {
@@ -116,11 +116,11 @@ class TrackingLoop : IDisposable
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to enqueue capture: {e}");
+            ErrorOccurred?.Invoke(new("Failed to enqueue capture", e));
         }
     }
 
-    private void LoopAction()
+    void LoopAction()
     {
         BodyFrame? bodyFrame = null;
 
@@ -130,7 +130,7 @@ class TrackingLoop : IDisposable
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to get body frame: {e}");
+            ErrorOccurred?.Invoke(new("Failed to get body frame", e));
         }
 
         if (bodyFrame is null)
@@ -142,10 +142,11 @@ class TrackingLoop : IDisposable
         bodyFrame.Dispose();
     }
 
-    public event Action<BodyFrame>? BodyFrameReady;
+    internal event Action<BodyFrame>? BodyFrameReady;
+    internal event Action<Exception>? ErrorOccurred;
 
-    public record Param(Calibration Calibration)
+    internal record Param(Calibration Calibration)
     {
-        public TrackerConfiguration TrackerConfig { get; init; } = DefaultTrackerConfig;
+        internal TrackerConfiguration TrackerConfig { get; init; } = DefaultTrackerConfig;
     }
 }

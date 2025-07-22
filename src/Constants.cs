@@ -2,8 +2,8 @@ using K4AdotNet.BodyTracking;
 
 namespace TFLitePoseTrainer;
 
-public static class Constants
+static class Constants
 {
-    public static readonly int PoseFrameCount = 2000;
-    public static readonly int PoseJointCount = JointTypes.All.Count;
+    internal static readonly int PoseFrameCount = 2000;
+    internal static readonly int PoseJointCount = JointTypes.All.Count;
 }

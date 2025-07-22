@@ -4,17 +4,14 @@ using K4AdotNet.Sensor;
 
 namespace TFLitePoseTrainer.Extensions;
 
-public static class ImageFormatExtension
+static class ImageFormatExtension
 {
-    public static PixelFormat ToPixelFormat(this ImageFormat imageFormat)
+    internal static PixelFormat ToPixelFormat(this ImageFormat imageFormat)
     {
-        switch (imageFormat)
+        return imageFormat switch
         {
-            case ImageFormat.ColorBgra32:
-                return PixelFormats.Bgra32;
-
-            default:
-                throw new Exception("Unsupported image format.");
-        }
+            ImageFormat.ColorBgra32 => PixelFormats.Bgra32,
+            _ => throw new("Unsupported image format."),
+        };
     }
 }

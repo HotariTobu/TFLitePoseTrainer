@@ -4,11 +4,11 @@ using TFLitePoseTrainer.Interfaces;
 
 namespace TFLitePoseTrainer.Data;
 
-public record PoseFrame : IPoseFrame
+record PoseFrame : IPoseFrame
 {
     public IEnumerable<Vector3> JointVectors { get; init; }
 
-    public PoseFrame(IEnumerable<Vector3> jointVectors)
+    internal PoseFrame(IEnumerable<Vector3> jointVectors)
     {
         var jointCount = jointVectors.Count();
         if (jointCount != Constants.PoseJointCount)

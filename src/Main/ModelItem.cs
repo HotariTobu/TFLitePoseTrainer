@@ -2,28 +2,33 @@ using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
 
-public class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
+class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
 {
     public string DataPath => modelData.DataPath;
     public IReadOnlyList<string> PoseLabels => modelData.PoseLabels;
 
     #region == Label ==
 
-    private string _label = modelData.Label ?? modelData.Id;
+    string _label = modelData.Label ?? modelData.Id;
     public string Label
     {
         get => _label;
         set
         {
-            if (modelData.UpdateLabel(value))
+            var result = modelData.UpdateLabel(value);
+            if (result.HasException)
+            {
+                throw new("Failed updating label", result.Exception);
+            }
+            else
             {
                 _label = value;
-                RaisePropertyChanged(nameof(Label));
+                RaisePropertyChanged();
             }
         }
     }
 
     #endregion
 
-    public Exception? Delete() => modelData.Delete();
+    public Result Delete() => modelData.Delete();
 }

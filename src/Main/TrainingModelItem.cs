@@ -2,7 +2,7 @@ using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
 
-public class TrainingModelItem(ModelData modelData) : SharedWPF.ViewModelBase
+class TrainingModelItem(ModelData modelData) : SharedWPF.ViewModelBase
 {
     #region == Label ==
 
@@ -11,7 +11,7 @@ public class TrainingModelItem(ModelData modelData) : SharedWPF.ViewModelBase
     #endregion
     #region == ProgressValue ==
 
-    private float _progressValue;
+    float _progressValue;
     public float ProgressValue
     {
         get => _progressValue;
@@ -20,7 +20,7 @@ public class TrainingModelItem(ModelData modelData) : SharedWPF.ViewModelBase
             if (_progressValue != value)
             {
                 _progressValue = value;
-                RaisePropertyChanged(nameof(ProgressValue));
+                RaisePropertyChanged();
             }
         }
     }

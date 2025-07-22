@@ -2,33 +2,33 @@ using System.IO;
 
 namespace TFLitePoseTrainer.Data;
 
-public class ModelData
+class ModelData
 {
-    private static readonly string RootPath = Path.GetFullPath(@"model-data");
-    private static string DirectoryPathFormat(string id) => Path.Join(RootPath, id);
-    private static string LabelPathFormat(string directoryPath) => Path.Join(directoryPath, "label.txt");
-    private static string DataPathFormat(string directoryPath) => Path.Join(directoryPath, "data");
-    private static string PoseLabelsPathFormat(string directoryPath) => Path.Join(directoryPath, "pose-labels.txt");
+    static readonly string RootPath = Path.GetFullPath(@"model-data");
+    static string DirectoryPathFormat(string id) => Path.Join(RootPath, id);
+    static string LabelPathFormat(string directoryPath) => Path.Join(directoryPath, "label.txt");
+    static string DataPathFormat(string directoryPath) => Path.Join(directoryPath, "data");
+    static string PoseLabelsPathFormat(string directoryPath) => Path.Join(directoryPath, "pose-labels.txt");
 
     static ModelData()
     {
         Directory.CreateDirectory(RootPath);
     }
 
-    public readonly string Id;
-    public readonly DateTime CreatedAt;
+    internal readonly string Id;
+    internal readonly DateTime CreatedAt;
 
-    private readonly string _directoryPath;
-    private readonly string _labelPath;
-    private readonly string _poseLabelsPath;
+    readonly string _directoryPath;
+    readonly string _labelPath;
+    readonly string _poseLabelsPath;
 
-    public string DataPath { get; }
-    public string? Label { get; private set; }
-    public IReadOnlyList<string> PoseLabels { get; private set; } = [];
+    internal string DataPath { get; }
+    internal string? Label { get; private set; }
+    internal IReadOnlyList<string> PoseLabels { get; private set; } = [];
 
-    private ModelData() : this(Guid.NewGuid().ToString(), DateTime.Now) { }
+    ModelData() : this(Guid.NewGuid().ToString(), DateTime.Now) { }
 
-    private ModelData(string id, DateTime createdAt)
+    ModelData(string id, DateTime createdAt)
     {
         Id = id;
         CreatedAt = createdAt;
@@ -40,27 +40,13 @@ public class ModelData
         DataPath = DataPathFormat(_directoryPath);
     }
 
-    public bool UpdateLabel(string label)
+    internal Result UpdateLabel(string label)
     {
         try
         {
             File.WriteAllText(_labelPath, label);
             Label = label;
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Failed updating label: {e}");
-            return false;
-        }
-    }
-
-    public Exception? Delete()
-    {
-        try
-        {
-            Directory.Delete(_directoryPath, true);
-            return null;
+            return Result.Success;
         }
         catch (Exception e)
         {
@@ -68,7 +54,20 @@ public class ModelData
         }
     }
 
-    public static (ModelData?, Exception?) Create(IEnumerable<string> poseLabels)
+    internal Result Delete()
+    {
+        try
+        {
+            Directory.Delete(_directoryPath, true);
+            return Result.Success;
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
+    }
+
+    internal static Result<ModelData> Create(IEnumerable<string> poseLabels)
     {
         var modelData = new ModelData()
         {
@@ -77,7 +76,7 @@ public class ModelData
 
         if (Directory.Exists(modelData._directoryPath))
         {
-            return (null, new Exception($"Exist id: {modelData.Id}"));
+            return new Exception($"Exist model directory with id: {modelData.Id}");
         }
 
         try
@@ -86,7 +85,7 @@ public class ModelData
         }
         catch (Exception e)
         {
-            return (null, new Exception($"Failed creating directory", e));
+            return new Exception($"Failed creating model directory", e);
         }
 
         try
@@ -95,13 +94,13 @@ public class ModelData
         }
         catch (Exception e)
         {
-            return (null, new Exception($"Failed storing pose labels", e));
+            return new Exception($"Failed storing pose labels", e);
         }
 
-        return (modelData, null);
+        return modelData;
     }
 
-    public static IEnumerable<ModelData>? List()
+    internal static Result<IEnumerable<ModelData>> List()
     {
         try
         {
@@ -140,8 +139,7 @@ public class ModelData
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed listing ModelData: {e}");
-            return null;
+            return e;
         }
     }
 }

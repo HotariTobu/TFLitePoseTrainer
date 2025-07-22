@@ -1,6 +1,6 @@
 namespace TFLitePoseTrainer.Controls;
 
-public enum SkeletonProjectionMode
+enum SkeletonProjectionMode
 {
     Depth,
     Color,

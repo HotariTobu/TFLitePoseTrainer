@@ -9,7 +9,7 @@ internal class DataSource : SharedWPF.ViewModelBase
 {
     #region == CaptureImage ==
 
-    private WriteableBitmap? _captureImage;
+    WriteableBitmap? _captureImage;
     public WriteableBitmap? CaptureImage
     {
         get => _captureImage;
@@ -18,7 +18,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_captureImage != value)
             {
                 _captureImage = value;
-                RaisePropertyChanged(nameof(CaptureImage));
+                RaisePropertyChanged();
             }
         }
     }
@@ -26,7 +26,7 @@ internal class DataSource : SharedWPF.ViewModelBase
     #endregion
     #region == Calibration ==
 
-    private Calibration _calibration = new();
+    Calibration _calibration = new();
 
     public Calibration Calibration
     {
@@ -34,7 +34,7 @@ internal class DataSource : SharedWPF.ViewModelBase
         set
         {
             _calibration = value;
-            RaisePropertyChanged(nameof(Calibration));
+            RaisePropertyChanged();
         }
     }
 
@@ -47,7 +47,7 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #region == CanStartRecording ==
 
-    private bool _canStartRecording = true;
+    bool _canStartRecording = true;
     public bool CanStartRecording
     {
         get => _canStartRecording;
@@ -56,7 +56,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_canStartRecording != value)
             {
                 _canStartRecording = value;
-                RaisePropertyChanged(nameof(CanStartRecording));
+                RaisePropertyChanged();
             }
         }
     }
@@ -64,7 +64,7 @@ internal class DataSource : SharedWPF.ViewModelBase
     #endregion
     #region == IsRecording ==
 
-    private bool _isRecording;
+    bool _isRecording;
     public bool IsRecording
     {
         get => _isRecording;
@@ -73,7 +73,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_isRecording != value)
             {
                 _isRecording = value;
-                RaisePropertyChanged(nameof(IsRecording));
+                RaisePropertyChanged();
             }
         }
     }
@@ -81,7 +81,7 @@ internal class DataSource : SharedWPF.ViewModelBase
     #endregion
     #region == ProgressValue ==
 
-    private double _progressValue;
+    double _progressValue;
     public double ProgressValue
     {
         get => _progressValue;
@@ -90,7 +90,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_progressValue != value)
             {
                 _progressValue = value;
-                RaisePropertyChanged(nameof(ProgressValue));
+                RaisePropertyChanged();
             }
         }
     }

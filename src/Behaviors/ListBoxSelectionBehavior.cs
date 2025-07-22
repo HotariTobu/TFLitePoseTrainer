@@ -6,11 +6,11 @@ using Microsoft.Xaml.Behaviors;
 
 namespace TFLitePoseTrainer.Behaviors;
 
-public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
+class ListBoxSelectionBehavior<T> : Behavior<ListBox>
 {
     #region == SelectedItems ==
 
-    public static readonly DependencyProperty SelectedItemsProperty =
+    internal static readonly DependencyProperty SelectedItemsProperty =
             DependencyProperty.Register(
                 nameof(SelectedItems),
                 typeof(IList<T>),
@@ -21,13 +21,13 @@ public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
                     PropertyChangedCallback = OnSelectedItemsChanged,
                 });
 
-    public IList<T> SelectedItems
+    internal IList<T> SelectedItems
     {
         get => (IList<T>)GetValue(SelectedItemsProperty);
         set => SetValue(SelectedItemsProperty, value);
     }
 
-    private static void OnSelectedItemsChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+    static void OnSelectedItemsChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
     {
         if (sender is not ListBoxSelectionBehavior<T> behavior)
         {
@@ -52,7 +52,7 @@ public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
         behavior.SelectItems(newSelectedItems);
     }
 
-    private void OnSourceSelectedItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    void OnSourceSelectedItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         ApplyChange(_listBox?.SelectedItems, selectedItems =>
         {
@@ -76,8 +76,8 @@ public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
 
     #endregion
 
-    private ListBox? _listBox;
-    private bool _isChanging = false;
+    ListBox? _listBox;
+    bool _isChanging = false;
 
     protected override void OnAttached()
     {
@@ -100,7 +100,7 @@ public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
         _listBox = null;
     }
 
-    private void SelectItems(IList<T> items)
+    void SelectItems(IList<T> items)
     {
         ApplyChange(_listBox?.SelectedItems, selectedItems =>
         {
@@ -113,7 +113,7 @@ public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
         });
     }
 
-    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ApplyChange(SelectedItems, selectedItems =>
         {
@@ -129,7 +129,7 @@ public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
         });
     }
 
-    private void ApplyChange(System.Collections.IList? items, Action<System.Collections.IList> action)
+    void ApplyChange(System.Collections.IList? items, Action<System.Collections.IList> action)
     {
         if (_isChanging || items is null)
         {
@@ -141,7 +141,7 @@ public class ListBoxSelectionBehavior<T> : Behavior<ListBox>
         _isChanging = false;
     }
 
-    private void ApplyChange(IList<T>? items, Action<IList<T>> action)
+    void ApplyChange(IList<T>? items, Action<IList<T>> action)
     {
         if (_isChanging || items is null)
         {

@@ -9,7 +9,7 @@ namespace TFLitePoseTrainer;
 /// isStarted = true;
 /// defer.Disposed += () => isStarted = false;
 /// </example>
-public sealed class Defer : IDisposable
+sealed class Defer : IDisposable
 {
     public void Dispose()
     {
@@ -17,5 +17,5 @@ public sealed class Defer : IDisposable
         Disposed = null;
     }
 
-    public event Action? Disposed;
+    internal event Action? Disposed;
 }

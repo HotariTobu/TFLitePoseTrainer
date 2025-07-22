@@ -9,7 +9,7 @@ using K4AdotNet.Sensor;
 namespace TFLitePoseTrainer.Controls;
 
 [ContentProperty("NoContent")]
-public class SkeletonElement : FrameworkElement
+class SkeletonElement : FrameworkElement
 {
     static SkeletonElement()
     {
@@ -33,11 +33,11 @@ public class SkeletonElement : FrameworkElement
         JointHierarchy = jointHierarchy;
     }
 
-    private static readonly IEnumerable<Tuple<JointType, JointType>> JointHierarchy;
+    static readonly IEnumerable<Tuple<JointType, JointType>> JointHierarchy;
 
     #region == BonePen ==
 
-    public static readonly DependencyProperty BonePenProperty =
+    internal static readonly DependencyProperty BonePenProperty =
         DependencyProperty.Register(
             nameof(BonePen),
             typeof(Pen),
@@ -46,7 +46,7 @@ public class SkeletonElement : FrameworkElement
                 new Pen(),
                 FrameworkPropertyMetadataOptions.AffectsRender));
 
-    public Pen BonePen
+    internal Pen BonePen
     {
         get => (Pen)GetValue(BonePenProperty);
         set => SetValue(BonePenProperty, value);
@@ -55,7 +55,7 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == JointBrushNone ==
 
-    public static readonly DependencyProperty JointBrushNoneProperty =
+    internal static readonly DependencyProperty JointBrushNoneProperty =
         DependencyProperty.Register(
             nameof(JointBrushNone),
             typeof(Brush),
@@ -64,13 +64,13 @@ public class SkeletonElement : FrameworkElement
                 Brushes.Transparent,
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 (d, e) => ((SkeletonElement)d).OnJointBrushNoneChanged(e)));
-    public Brush JointBrushNone
+    internal Brush JointBrushNone
     {
         get => (Brush)GetValue(JointBrushNoneProperty);
         set => SetValue(JointBrushNoneProperty, value);
     }
 
-    private void OnJointBrushNoneChanged(DependencyPropertyChangedEventArgs e)
+    void OnJointBrushNoneChanged(DependencyPropertyChangedEventArgs e)
     {
         UpdateJointBrushDictionary();
     }
@@ -78,7 +78,7 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == JointBrushLow ==
 
-    public static readonly DependencyProperty JointBrushLowProperty =
+    internal static readonly DependencyProperty JointBrushLowProperty =
         DependencyProperty.Register(
             nameof(JointBrushLow),
             typeof(Brush),
@@ -88,13 +88,13 @@ public class SkeletonElement : FrameworkElement
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 (d, e) => ((SkeletonElement)d).OnJointBrushLowChanged(e)));
 
-    public Brush JointBrushLow
+    internal Brush JointBrushLow
     {
         get => (Brush)GetValue(JointBrushLowProperty);
         set => SetValue(JointBrushLowProperty, value);
     }
 
-    private void OnJointBrushLowChanged(DependencyPropertyChangedEventArgs e)
+    void OnJointBrushLowChanged(DependencyPropertyChangedEventArgs e)
     {
         UpdateJointBrushDictionary();
     }
@@ -102,7 +102,7 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == JointBrushMedium ==
 
-    public static readonly DependencyProperty JointBrushMediumProperty =
+    internal static readonly DependencyProperty JointBrushMediumProperty =
         DependencyProperty.Register(
             nameof(JointBrushMedium),
             typeof(Brush),
@@ -112,13 +112,13 @@ public class SkeletonElement : FrameworkElement
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 (d, e) => ((SkeletonElement)d).OnJointBrushMediumChanged(e)));
 
-    public Brush JointBrushMedium
+    internal Brush JointBrushMedium
     {
         get => (Brush)GetValue(JointBrushMediumProperty);
         set => SetValue(JointBrushMediumProperty, value);
     }
 
-    private void OnJointBrushMediumChanged(DependencyPropertyChangedEventArgs e)
+    void OnJointBrushMediumChanged(DependencyPropertyChangedEventArgs e)
     {
         UpdateJointBrushDictionary();
     }
@@ -126,7 +126,7 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == JointBrushHigh ==
 
-    public static readonly DependencyProperty JointBrushHighProperty =
+    internal static readonly DependencyProperty JointBrushHighProperty =
         DependencyProperty.Register(
             nameof(JointBrushHigh),
             typeof(Brush),
@@ -136,13 +136,13 @@ public class SkeletonElement : FrameworkElement
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 (d, e) => ((SkeletonElement)d).OnJointBrushHighChanged(e)));
 
-    public Brush JointBrushHigh
+    internal Brush JointBrushHigh
     {
         get => (Brush)GetValue(JointBrushHighProperty);
         set => SetValue(JointBrushHighProperty, value);
     }
 
-    private void OnJointBrushHighChanged(DependencyPropertyChangedEventArgs e)
+    void OnJointBrushHighChanged(DependencyPropertyChangedEventArgs e)
     {
         UpdateJointBrushDictionary();
     }
@@ -150,7 +150,7 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == JointRadius ==
 
-    public static readonly DependencyProperty JointRadiusProperty =
+    internal static readonly DependencyProperty JointRadiusProperty =
         DependencyProperty.Register(
             nameof(JointRadius),
             typeof(double),
@@ -159,7 +159,7 @@ public class SkeletonElement : FrameworkElement
                 0.0,
                 FrameworkPropertyMetadataOptions.AffectsRender));
 
-    public double JointRadius
+    internal double JointRadius
     {
         get => (double)GetValue(JointRadiusProperty);
         set => SetValue(JointRadiusProperty, value);
@@ -168,7 +168,7 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == JointPen ==
 
-    public static readonly DependencyProperty JointPenProperty =
+    internal static readonly DependencyProperty JointPenProperty =
         DependencyProperty.Register(
             nameof(JointPen),
             typeof(Pen),
@@ -177,7 +177,7 @@ public class SkeletonElement : FrameworkElement
                 new Pen(),
                 FrameworkPropertyMetadataOptions.AffectsRender));
 
-    public Pen JointPen
+    internal Pen JointPen
     {
         get => (Pen)GetValue(JointPenProperty);
         set => SetValue(JointPenProperty, value);
@@ -187,7 +187,7 @@ public class SkeletonElement : FrameworkElement
 
     #region == Calibration ==
 
-    public static readonly DependencyProperty CalibrationProperty =
+    internal static readonly DependencyProperty CalibrationProperty =
            DependencyProperty.Register(
                nameof(Calibration),
                typeof(Calibration),
@@ -197,13 +197,13 @@ public class SkeletonElement : FrameworkElement
                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
                    (d, e) => ((SkeletonElement)d).OnCalibrationChanged(e)));
 
-    public Calibration Calibration
+    internal Calibration Calibration
     {
         get => (Calibration)GetValue(CalibrationProperty);
         set => SetValue(CalibrationProperty, value);
     }
 
-    private void OnCalibrationChanged(DependencyPropertyChangedEventArgs e)
+    void OnCalibrationChanged(DependencyPropertyChangedEventArgs e)
     {
         UpdateProjector();
     }
@@ -211,7 +211,7 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == ProjectionMode ==
 
-    public static readonly DependencyProperty ProjectionModeProperty =
+    internal static readonly DependencyProperty ProjectionModeProperty =
             DependencyProperty.Register(
                 nameof(ProjectionMode),
                 typeof(SkeletonProjectionMode),
@@ -221,13 +221,13 @@ public class SkeletonElement : FrameworkElement
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
                     (d, e) => ((SkeletonElement)d).OnProjectionModeChanged(e)));
 
-    public SkeletonProjectionMode ProjectionMode
+    internal SkeletonProjectionMode ProjectionMode
     {
         get => (SkeletonProjectionMode)GetValue(ProjectionModeProperty);
         set => SetValue(ProjectionModeProperty, value);
     }
 
-    private void OnProjectionModeChanged(DependencyPropertyChangedEventArgs e)
+    void OnProjectionModeChanged(DependencyPropertyChangedEventArgs e)
     {
         UpdateProjector();
     }
@@ -236,7 +236,7 @@ public class SkeletonElement : FrameworkElement
 
     #region == Skeleton ==
 
-    public static readonly DependencyProperty SkeletonProperty =
+    internal static readonly DependencyProperty SkeletonProperty =
             DependencyProperty.Register(
                 nameof(Skeleton),
                 typeof(Skeleton),
@@ -246,13 +246,13 @@ public class SkeletonElement : FrameworkElement
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     (d, e) => ((SkeletonElement)d).OnSkeletonChanged(e)));
 
-    public Skeleton Skeleton
+    internal Skeleton Skeleton
     {
         get => (Skeleton)GetValue(SkeletonProperty);
         set => SetValue(SkeletonProperty, value);
     }
 
-    private void OnSkeletonChanged(DependencyPropertyChangedEventArgs e)
+    void OnSkeletonChanged(DependencyPropertyChangedEventArgs e)
     {
         UpdateProjectedPointDictionary();
         UpdateJointBrushDictionary();
@@ -262,11 +262,11 @@ public class SkeletonElement : FrameworkElement
 
     #region == Projector ==
 
-    private static readonly Projector FallbackProjector = (in Joint _) => null;
+    static readonly Projector FallbackProjector = (in Joint _) => null;
 
-    private Projector _projector = FallbackProjector;
+    Projector _projector = FallbackProjector;
 
-    private void UpdateProjector()
+    void UpdateProjector()
     {
         var calibration = Calibration;
         if (calibration.IsValid)
@@ -292,18 +292,18 @@ public class SkeletonElement : FrameworkElement
         UpdateProjectedPointDictionary();
     }
 
-    private delegate Float2? Converter(in Joint joint);
-    private delegate Point? Projector(in Joint joint);
+    delegate Float2? Converter(in Joint joint);
+    delegate Point? Projector(in Joint joint);
 
     #endregion
     #region == ProjectedPointDictionary ==
 
-    private readonly IDictionary<JointType, Point?> _projectedPointDictionary = new Dictionary<JointType, Point?>(
+    readonly IDictionary<JointType, Point?> _projectedPointDictionary = new Dictionary<JointType, Point?>(
         from jointType in JointTypes.All
         select new KeyValuePair<JointType, Point?>(jointType, null)
     );
 
-    private void UpdateProjectedPointDictionary()
+    void UpdateProjectedPointDictionary()
     {
         var skeleton = Skeleton;
 
@@ -317,12 +317,12 @@ public class SkeletonElement : FrameworkElement
     #endregion
     #region == JointBrushDictionary ==
 
-    private readonly IDictionary<JointType, Brush> _jointBrushDictionary = new Dictionary<JointType, Brush>(
+    readonly IDictionary<JointType, Brush> _jointBrushDictionary = new Dictionary<JointType, Brush>(
         from jointType in JointTypes.All
         select new KeyValuePair<JointType, Brush>(jointType, Brushes.Transparent)
     );
 
-    private void UpdateJointBrushDictionary()
+    void UpdateJointBrushDictionary()
     {
         var skeleton = Skeleton;
 

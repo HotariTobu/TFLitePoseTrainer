@@ -4,7 +4,7 @@ using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
 
-public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
+class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
 {
     public string DataPath => poseData.DataPath;
 
@@ -15,21 +15,26 @@ public class PoseItem(PoseData poseData) : SharedWPF.ViewModelBase
     #endregion
     #region == Label ==
 
-    private string _label = poseData.Label ?? poseData.Id;
+    string _label = poseData.Label ?? poseData.Id;
     public string Label
     {
         get => _label;
         set
         {
-            if (poseData.UpdateLabel(value))
+            var result = poseData.UpdateLabel(value);
+            if (result.HasException)
+            {
+                throw new("Failed updating label", result.Exception);
+            }
+            else
             {
                 _label = value;
-                RaisePropertyChanged(nameof(Label));
+                RaisePropertyChanged();
             }
         }
     }
 
     #endregion
 
-    public Exception? Delete() => poseData.Delete();
+    public Result Delete() => poseData.Delete();
 }

@@ -5,14 +5,14 @@ using System.Text.RegularExpressions;
 
 namespace TFLitePoseTrainer;
 
-public static partial class Trainer
+static partial class Trainer
 {
-    private static string? s_trainerPath;
+    static string? s_trainerPath;
 
     [GeneratedRegex(@"^Progress: (?<progress>\d*\.\d*)$")]
     private static partial Regex ProgressRegex();
 
-    public static async Task<Exception?> Setup()
+    internal static async Task<Result> Setup()
     {
         if (s_trainerPath != null)
         {
@@ -57,10 +57,10 @@ public static partial class Trainer
 
         s_trainerPath = trainerPath;
 
-        return null;
+        return Result.Success;
     }
 
-    public static async Task<Exception?> Train(string outputPath, IEnumerable<string> poseDataPaths, Action<float> progressCallback)
+    internal static async Task<Result> Train(string outputPath, IEnumerable<string> poseDataPaths, Action<float> progressCallback)
     {
         Debug.Assert(poseDataPaths.Any(), "No samples provided for training");
 
@@ -136,6 +136,6 @@ public static partial class Trainer
             return new Exception($"Failed to train", e);
         }
 
-        return null;
+        return Result.Success;
     }
 }

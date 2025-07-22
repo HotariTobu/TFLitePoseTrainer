@@ -8,13 +8,13 @@ namespace SharedWPF;
 /*
  Refer to https://qiita.com/tricogimmick/items/f07ef53dea817d198475
  */
-public abstract class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorInfo
+abstract class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorInfo
 {
     #region == INotifyPropertyChanged ==
 
     #region == PropertyChanged ==
 
-    private event PropertyChangedEventHandler? PropertyChanged;
+    event PropertyChangedEventHandler? PropertyChanged;
 
     event PropertyChangedEventHandler? INotifyPropertyChanged.PropertyChanged
     {
@@ -33,13 +33,13 @@ public abstract class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorIn
 
     #region == INotifyDataErrorInfo ==
 
-    private readonly Dictionary<string, List<object?>> _errors = [];
+    readonly Dictionary<string, List<object?>> _errors = [];
 
     bool INotifyDataErrorInfo.HasErrors => _errors.Count > 0;
 
     #region == ErrorsChanged ==
 
-    private event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+    event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 
     event EventHandler<DataErrorsChangedEventArgs>? INotifyDataErrorInfo.ErrorsChanged
     {
@@ -81,7 +81,7 @@ public abstract class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorIn
         RaiseErrorsChanged(propertyName);
     }
 
-    private void RaiseErrorsChanged(string propertyName)
+    void RaiseErrorsChanged(string propertyName)
     {
         ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
     }
@@ -92,8 +92,8 @@ public abstract class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorIn
 
     protected class DelegateCommand(Action<object?> command, Func<object?, bool>? canExecute = null) : ICommand
     {
-        private readonly Action<object?> _command = command;
-        private readonly Func<object?, bool>? _canExecute = canExecute;
+        readonly Action<object?> _command = command;
+        readonly Func<object?, bool>? _canExecute = canExecute;
 
         void ICommand.Execute(object? parameter)
         {

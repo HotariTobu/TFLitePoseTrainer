@@ -9,7 +9,7 @@ internal class DataSource : SharedWPF.ViewModelBase
 {
     #region == WindowTitle ==
 
-    private string _windowTitle = "";
+    string _windowTitle = "";
     public string WindowTitle
     {
         get => _windowTitle;
@@ -18,7 +18,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_windowTitle != value)
             {
                 _windowTitle = value;
-                RaisePropertyChanged(nameof(WindowTitle));
+                RaisePropertyChanged();
             }
         }
     }
@@ -27,7 +27,7 @@ internal class DataSource : SharedWPF.ViewModelBase
 
     #region == CaptureImage ==
 
-    private WriteableBitmap? _captureImage;
+    WriteableBitmap? _captureImage;
     public WriteableBitmap? CaptureImage
     {
         get => _captureImage;
@@ -36,7 +36,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_captureImage != value)
             {
                 _captureImage = value;
-                RaisePropertyChanged(nameof(CaptureImage));
+                RaisePropertyChanged();
             }
         }
     }
@@ -44,7 +44,7 @@ internal class DataSource : SharedWPF.ViewModelBase
     #endregion
     #region == Calibration ==
 
-    private Calibration _calibration = new();
+    Calibration _calibration = new();
 
     public Calibration Calibration
     {
@@ -52,7 +52,7 @@ internal class DataSource : SharedWPF.ViewModelBase
         set
         {
             _calibration = value;
-            RaisePropertyChanged(nameof(Calibration));
+            RaisePropertyChanged();
         }
     }
 

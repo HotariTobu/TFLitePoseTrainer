@@ -11,10 +11,10 @@ namespace TFLitePoseTrainer.Review;
 
 partial class Window : SubWindow
 {
-    private readonly CaptureLoop _captureLoop;
-    private readonly TrackingLoop _trackingLoop;
+    readonly CaptureLoop _captureLoop;
+    readonly TrackingLoop _trackingLoop;
 
-    private readonly DataSource _dataSource;
+    readonly DataSource _dataSource;
 
     Classifier? _classifier;
     IReadOnlyList<string> _poseLabels = [];
@@ -29,6 +29,9 @@ partial class Window : SubWindow
         _dataSource = (DataSource)DataContext;
         _dataSource.Calibration = _captureLoop.Calibration;
         _dataSource.CaptureImage = CaptureImageHelper.CreateRenderTarget(_captureLoop.DeviceConfig, this);
+
+        _captureLoop.ErrorOccurred += Console.Error.WriteLine;
+        _trackingLoop.ErrorOccurred += Console.Error.WriteLine;
     }
 
     protected override async void OnActivated(EventArgs e)
@@ -61,7 +64,7 @@ partial class Window : SubWindow
         _poseLabels = poseLabels;
     }
 
-    private void UpdateCaptureImage(Capture capture)
+    void UpdateCaptureImage(Capture capture)
     {
         Debug.Assert(_dataSource.CaptureImage is not null);
 
@@ -72,10 +75,10 @@ partial class Window : SubWindow
             return;
         }
 
-        var (renderer, exception) = CaptureImageHelper.Renderer.Create(image);
-        if (renderer is null || exception is not null)
+        var rendererResult = CaptureImageHelper.Renderer.Create(image);
+        if (!rendererResult.TryGetValue(out var renderer))
         {
-            Console.Error.WriteLine($"Failed to create renderer: {exception}");
+            Console.Error.WriteLine($"Failed to create renderer: {rendererResult.Exception}");
             return;
         }
 
@@ -86,7 +89,7 @@ partial class Window : SubWindow
         });
     }
 
-    private void UpdateSkeleton(BodyFrame bodyFrame)
+    void UpdateSkeleton(BodyFrame bodyFrame)
     {
         var skeletonItems = _dataSource.SkeletonItems;
         var actionDictionary = (
@@ -139,7 +142,7 @@ partial class Window : SubWindow
         });
     }
 
-    private void UpdateInferredPoseLabels(BodyFrame bodyFrame)
+    void UpdateInferredPoseLabels(BodyFrame bodyFrame)
     {
         if (_classifier is null)
         {

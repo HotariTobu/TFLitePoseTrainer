@@ -15,7 +15,7 @@ class Classifier : IDisposable
 
     readonly float[] _outputData;
 
-    public Classifier(string modelFilePath)
+    internal Classifier(string modelFilePath)
     {
         if (!File.Exists(modelFilePath))
         {
@@ -44,7 +44,7 @@ class Classifier : IDisposable
         _outputTensor.Dispose();
     }
 
-    public int? Classify(IEnumerable<Vector3> jointNormalizedVectors)
+    internal int? Classify(IEnumerable<Vector3> jointNormalizedVectors)
     {
         var inputData = jointNormalizedVectors.SelectMany(
             vector => new float[] { vector.X, vector.Y, vector.Z }

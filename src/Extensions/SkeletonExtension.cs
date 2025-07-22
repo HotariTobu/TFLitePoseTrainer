@@ -4,12 +4,12 @@ using K4AdotNet.BodyTracking;
 
 namespace TFLitePoseTrainer.Extensions;
 
-public static class SkeletonExtension
+static class SkeletonExtension
 {
-    private static readonly JointType OriginJointType = JointType.Pelvis;
-    private static readonly JointType FactorBaseJointType = JointType.Neck;
+    static readonly JointType OriginJointType = JointType.Pelvis;
+    static readonly JointType FactorBaseJointType = JointType.Neck;
 
-    public static IEnumerable<Vector3> GetNormalizedJointVectors(this in Skeleton skelton)
+    internal static IEnumerable<Vector3> GetNormalizedJointVectors(this in Skeleton skelton)
     {
         var jointPositions = from joint in skelton
                              select joint.GetPos();

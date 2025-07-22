@@ -13,10 +13,10 @@ namespace TFLitePoseTrainer.Record;
 
 partial class Window : SubWindow
 {
-    private readonly CaptureLoop _captureLoop;
-    private readonly TrackingLoop _trackingLoop;
+    readonly CaptureLoop _captureLoop;
+    readonly TrackingLoop _trackingLoop;
 
-    private readonly DataSource _dataSource;
+    readonly DataSource _dataSource;
 
     internal Window(CaptureLoop captureLoop, TrackingLoop trackingLoop)
     {
@@ -28,6 +28,9 @@ partial class Window : SubWindow
         _dataSource = (DataSource)DataContext;
         _dataSource.Calibration = _captureLoop.Calibration;
         _dataSource.CaptureImage = CaptureImageHelper.CreateRenderTarget(_captureLoop.DeviceConfig, this);
+
+        _captureLoop.ErrorOccurred += Console.Error.WriteLine;
+        _trackingLoop.ErrorOccurred += Console.Error.WriteLine;
     }
 
     protected override async void OnActivated(EventArgs e)
@@ -50,7 +53,7 @@ partial class Window : SubWindow
         await Task.WhenAll(Task.Run(_captureLoop.Stop), Task.Run(_trackingLoop.Stop));
     }
 
-    private void UpdateCaptureImage(Capture capture)
+    void UpdateCaptureImage(Capture capture)
     {
         Debug.Assert(_dataSource.CaptureImage is not null);
 
@@ -61,10 +64,10 @@ partial class Window : SubWindow
             return;
         }
 
-        var (renderer, exception) = CaptureImageHelper.Renderer.Create(image);
-        if (renderer is null || exception is not null)
+        var rendererResult = CaptureImageHelper.Renderer.Create(image);
+        if (!rendererResult.TryGetValue(out var renderer))
         {
-            Console.Error.WriteLine($"Failed to create renderer: {exception}");
+            Console.Error.WriteLine($"Failed to create renderer: {rendererResult.Exception}");
             return;
         }
 
@@ -75,7 +78,7 @@ partial class Window : SubWindow
         });
     }
 
-    private void UpdateSkeleton(BodyFrame bodyFrame)
+    void UpdateSkeleton(BodyFrame bodyFrame)
     {
         var skeletonItems = _dataSource.SkeletonItems;
         var actionDictionary = (
@@ -128,17 +131,17 @@ partial class Window : SubWindow
         });
     }
 
-    private void OnButtonClicked(object sender, RoutedEventArgs e)
+    void OnButtonClicked(object sender, RoutedEventArgs e)
     {
         _dataSource.CanStartRecording = false;
     }
 
-    private void OnCountdownCompleted(object sender, EventArgs e)
+    void OnCountdownCompleted(object sender, EventArgs e)
     {
         RecordPose();
     }
 
-    private async void RecordPose()
+    async void RecordPose()
     {
         Debug.Assert(_dataSource.CaptureImage is not null);
 
@@ -189,16 +192,16 @@ partial class Window : SubWindow
         }
 
         var sample = new PoseSample(frames);
-        var poseData = PoseData.Create(_dataSource.CaptureImage, sample);
-        if (poseData is null)
+        var poseDataResult = PoseData.Create(_dataSource.CaptureImage, sample);
+        if (!poseDataResult.TryGetValue(out var poseData))
         {
-            MessageBox.Show("Failed creating pose data");
+            Console.Error.WriteLine($"Failed creating pose data: {poseDataResult.Exception}");
+            MessageBox.Show("Failed creating pose data", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
-        else
-        {
-            OnPoseRecorded?.Invoke(poseData);
-        }
+
+        OnPoseRecorded?.Invoke(poseData);
     }
 
-    public event Action<PoseData>? OnPoseRecorded;
+    internal event Action<PoseData>? OnPoseRecorded;
 }

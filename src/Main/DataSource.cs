@@ -16,7 +16,7 @@ internal class DataSource : SharedWPF.ViewModelBase
     #endregion
     #region == IsEditingPoses ==
 
-    private bool _isEditingPoses;
+    bool _isEditingPoses;
     public bool IsEditingPoses
     {
         get => _isEditingPoses;
@@ -25,7 +25,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_isEditingPoses != value)
             {
                 _isEditingPoses = value;
-                RaisePropertyChanged(nameof(IsEditingPoses));
+                RaisePropertyChanged();
             }
         }
     }
@@ -50,7 +50,7 @@ internal class DataSource : SharedWPF.ViewModelBase
     #endregion
     #region == IsEditingModels ==
 
-    private bool _isEditingModels;
+    bool _isEditingModels;
     public bool IsEditingModels
     {
         get => _isEditingModels;
@@ -59,7 +59,7 @@ internal class DataSource : SharedWPF.ViewModelBase
             if (_isEditingModels != value)
             {
                 _isEditingModels = value;
-                RaisePropertyChanged(nameof(IsEditingModels));
+                RaisePropertyChanged();
             }
         }
     }

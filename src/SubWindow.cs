@@ -4,7 +4,7 @@ namespace TFLitePoseTrainer;
 
 public abstract class SubWindow : System.Windows.Window
 {
-    private bool _canClose;
+    bool _canClose;
 
     protected override void OnClosing(CancelEventArgs e)
     {
@@ -19,13 +19,13 @@ public abstract class SubWindow : System.Windows.Window
         Hide();
     }
 
-    public void ShowAndActivate()
+    internal void ShowAndActivate()
     {
         Show();
         Activate();
     }
 
-    public void CloseWithoutHiding()
+    internal void CloseWithoutHiding()
     {
         _canClose = true;
         Close();

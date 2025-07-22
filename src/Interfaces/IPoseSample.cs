@@ -1,6 +1,6 @@
 namespace TFLitePoseTrainer.Interfaces;
 
-public interface IPoseSample
+interface IPoseSample
 {
-    public IEnumerable<IPoseFrame> Frames { get; }
+    IEnumerable<IPoseFrame> Frames { get; }
 }

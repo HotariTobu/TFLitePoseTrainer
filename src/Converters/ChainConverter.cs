@@ -6,10 +6,10 @@ namespace TFLitePoseTrainer.Converters;
 
 internal class ChainConverter : IValueConverter
 {
-    private IValueConverter[] _converters = [];
-    public ObservableCollection<IValueConverter> Converters { get; } = [];
+    IValueConverter[] _converters = [];
+    internal ObservableCollection<IValueConverter> Converters { get; } = [];
 
-    public ChainConverter()
+    internal ChainConverter()
     {
         Converters.CollectionChanged += (sender, e) => _converters = [.. Converters];
     }

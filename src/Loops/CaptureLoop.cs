@@ -4,16 +4,16 @@ namespace TFLitePoseTrainer.Loops;
 
 class CaptureLoop : IDisposable
 {
-    public static readonly int DefaultDeviceIndex = 0;
-    public static readonly int Timeout = 500;
+    internal static readonly int DefaultDeviceIndex = 0;
+    internal static readonly int Timeout = 500;
 
-    private readonly LoopRunner _loopRunner;
-    private readonly Device _device;
+    readonly LoopRunner _loopRunner;
+    readonly Device _device;
 
-    private volatile bool _isStarting;
-    private volatile bool _isStopping;
-    private volatile bool _willStart;
-    private volatile bool _willStop;
+    volatile bool _isStarting;
+    volatile bool _isStopping;
+    volatile bool _willStart;
+    volatile bool _willStop;
 
     internal DeviceConfiguration DeviceConfig { get; }
     internal Calibration Calibration { get; }
@@ -30,7 +30,7 @@ class CaptureLoop : IDisposable
         }
     });
 
-    private CaptureLoop(Param param)
+    CaptureLoop(Param param)
     {
         _loopRunner = new(LoopAction);
         _device = Device.Open(param.DeviceIndex);
@@ -46,7 +46,7 @@ class CaptureLoop : IDisposable
         _device.Dispose();
     }
 
-    public void Start()
+    internal void Start()
     {
         if (_isStarting)
         {
@@ -69,7 +69,7 @@ class CaptureLoop : IDisposable
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to start cameras: {e}");
+            ErrorOccurred?.Invoke(new("Failed to start cameras", e));
         }
 
         _isStarting = false;
@@ -81,7 +81,7 @@ class CaptureLoop : IDisposable
         }
     }
 
-    public void Stop()
+    internal void Stop()
     {
         if (_isStopping)
         {
@@ -104,7 +104,7 @@ class CaptureLoop : IDisposable
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to stop cameras: {e}");
+            ErrorOccurred?.Invoke(new("Failed to stop cameras", e));
         }
 
         _isStopping = false;
@@ -116,7 +116,7 @@ class CaptureLoop : IDisposable
         }
     }
 
-    private void LoopAction()
+    void LoopAction()
     {
         Capture? capture = null;
 
@@ -126,7 +126,7 @@ class CaptureLoop : IDisposable
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Failed to get capture: {e}");
+            ErrorOccurred?.Invoke(new("Failed to get capture", e));
         }
 
         if (capture is null)
@@ -138,10 +138,11 @@ class CaptureLoop : IDisposable
         capture.Dispose();
     }
 
-    public event Action<Capture>? CaptureReady;
+    internal event Action<Capture>? CaptureReady;
+    internal event Action<Exception>? ErrorOccurred;
 
-    public record Param(DeviceConfiguration DeviceConfig)
+    internal record Param(DeviceConfiguration DeviceConfig)
     {
-        public int DeviceIndex { get; init; } = DefaultDeviceIndex;
+        internal int DeviceIndex { get; init; } = DefaultDeviceIndex;
     }
 }

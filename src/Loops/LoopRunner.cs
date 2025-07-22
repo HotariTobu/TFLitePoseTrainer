@@ -2,9 +2,8 @@ namespace TFLitePoseTrainer.Loops;
 
 class LoopRunner(Action action) : IDisposable
 {
-    private readonly Action _action = action;
-    private Thread? _thread;
-    private volatile bool _isRunning;
+    Thread? _thread;
+    volatile bool _isRunning;
 
     public void Dispose()
     {
@@ -19,7 +18,7 @@ class LoopRunner(Action action) : IDisposable
         }
     }
 
-    public void Start()
+    internal void Start()
     {
         if (_thread is not null || _isRunning)
         {
@@ -31,7 +30,7 @@ class LoopRunner(Action action) : IDisposable
         _thread.Start();
     }
 
-    public void Stop()
+    internal void Stop()
     {
         if (_thread is null || !_isRunning)
         {
@@ -43,11 +42,11 @@ class LoopRunner(Action action) : IDisposable
         _thread = null;
     }
 
-    private void Run()
+    void Run()
     {
         while (_isRunning)
         {
-            _action();
+            action();
         }
     }
 }

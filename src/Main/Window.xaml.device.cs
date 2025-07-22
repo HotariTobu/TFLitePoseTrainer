@@ -9,9 +9,9 @@ using TFLitePoseTrainer.Loops;
 
 namespace TFLitePoseTrainer.Main;
 
-partial class Window : System.Windows.Window
+partial class Window
 {
-    private static readonly DeviceConfiguration DeviceConfig = new()
+    static readonly DeviceConfiguration DeviceConfig = new()
     {
         CameraFps = FrameRate.Thirty,
         DepthMode = DepthMode.NarrowViewUnbinned,
@@ -20,7 +20,7 @@ partial class Window : System.Windows.Window
         SynchronizedImagesOnly = true,
     };
 
-    private static async Task WaitForConnection()
+    static async Task WaitForConnection()
     {
         while (true)
         {
@@ -40,7 +40,7 @@ partial class Window : System.Windows.Window
         }
     }
 
-    private static async Task CheckRuntime(TrackerProcessingMode mode)
+    static async Task CheckRuntime(TrackerProcessingMode mode)
     {
         var exception = await Task.Run<Exception?>(() =>
         {
@@ -63,18 +63,18 @@ partial class Window : System.Windows.Window
         throw new FatalException(2, $"Body tracking runtime is not available", exception);
     }
 
-    private static async Task<(CaptureLoop, TrackingLoop)> CreateLoops()
+    static async Task<(CaptureLoop, TrackingLoop)> CreateLoops()
     {
         var captureLoopResult = await CaptureLoop.Create(new(DeviceConfig));
         if (!captureLoopResult.TryGetValue(out var captureLoop))
         {
-            throw new FatalException(3, $"Failed creating capture loop", captureLoopResult.GetException());
+            throw new FatalException(3, $"Failed creating capture loop", captureLoopResult.Exception);
         }
 
         var trackingLoopResult = TrackingLoop.Create(new(captureLoop.Calibration));
         if (!trackingLoopResult.TryGetValue(out var trackingLoop))
         {
-            throw new FatalException(4, $"Failed creating tracking loop", trackingLoopResult.GetException());
+            throw new FatalException(4, $"Failed creating tracking loop", trackingLoopResult.Exception);
         }
 
         captureLoop.CaptureReady += trackingLoop.Enqueue;

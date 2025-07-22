@@ -32,15 +32,15 @@ static class CaptureImageHelper
         readonly int _stride;
         readonly IntPtr _buffer;
 
-        internal static (Renderer?, Exception?) Create(Image colorImage)
+        internal static Result<Renderer> Create(Image colorImage)
         {
             try
             {
-                return (new(colorImage), null);
+                return new Renderer(colorImage);
             }
             catch (Exception e)
             {
-                return (null, e);
+                return e;
             }
         }
 
@@ -54,7 +54,7 @@ static class CaptureImageHelper
             _buffer = Marshal.AllocHGlobal(_bufferSize);
             if (_buffer == IntPtr.Zero)
             {
-                throw new Exception("Failed to allocate memory for image buffer.");
+                throw new("Failed to allocate memory for image buffer.");
             }
 
             unsafe
