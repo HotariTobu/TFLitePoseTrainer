@@ -124,8 +124,6 @@
                                 Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom">
-                        <Button Content="👀"
-                                Click="OnReviewModelButtonClicked"/>
                         <Button Content="➕"
                                 Click="OnAddModelButtonClicked">
                         </Button>
@@ -161,14 +159,9 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <ListBox Style="{StaticResource ModelsControlStyle}"
+                <ItemsControl Style="{StaticResource ModelsControlStyle}"
                          ItemsSource="{Binding ModelItems}">
-                    <b:Interaction.Behaviors>
-                        <local_main:ModelListBoxSelectionBehavior
-                            SelectedItems="{Binding SelectedModelItems}" />
-                    </b:Interaction.Behaviors>
-
-                    <ListBox.Visibility>
+                    <ItemsControl.Visibility>
                         <Binding Path="IsEditingModels">
                             <Binding.Converter>
                                 <local_cv:ChainConverter>
@@ -179,20 +172,29 @@
                                 </local_cv:ChainConverter>
                             </Binding.Converter>
                         </Binding>
-                    </ListBox.Visibility>
+                    </ItemsControl.Visibility>
 
-                    <ListBox.ItemTemplate>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <TextBlock Text="{Binding Label}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontSize="20"
-                                           Padding="1"/>
-                            </Grid>
+                            <Border Padding="2" BorderThickness="1" BorderBrush="LightGray">
+                                <Grid>
+                                    <Canvas>
+                                        <StackPanel Canvas.Right="2" Canvas.Top="2" Orientation="Horizontal">
+                                            <Button Content="👀"
+                                                    Tag="{Binding}"
+                                                    Click="OnReviewModelButtonClicked"/>
+                                        </StackPanel>
+                                    </Canvas>
+                                    <TextBlock Text="{Binding Label}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="20"
+                                               Padding="1"/>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <ItemsControl Style="{StaticResource ModelsControlStyle}"
                          ItemsSource="{Binding ModelItems}">
                     <ItemsControl.Visibility>
@@ -205,17 +207,19 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="5,2">
-                                <Canvas>
-                                    <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
-                                            Tag="{Binding}"
-                                            Click="OnDeleteModelButtonClicked"/>
-                                </Canvas>
-                                <TextBox Text="{Binding Label, Mode=TwoWay}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontSize="20"/>
-                            </Grid>
+                            <Border Padding="2" BorderThickness="1" BorderBrush="LightGray">
+                                <Grid>
+                                    <Canvas>
+                                        <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
+                                                Tag="{Binding}"
+                                                Click="OnDeleteModelButtonClicked"/>
+                                    </Canvas>
+                                    <TextBox Text="{Binding Label, Mode=TwoWay}"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             FontSize="20"/>
+                                    </Grid>
+                                </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

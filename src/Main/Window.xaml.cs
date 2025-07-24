@@ -96,15 +96,15 @@ partial class Window : System.Windows.Window
             return;
         }
 
-        var selectedModelItem = _dataSource.SelectedModelItems.ToList();
-
-        if (selectedModelItem.Count != 1)
+        if (sender is not FrameworkElement element)
         {
-            MessageBox.Show("Please select only one model to review.", "Invalid Selection", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
-        var modelItem = selectedModelItem.First();
+        if (element.Tag is not ModelItem modelItem)
+        {
+            return;
+        }
 
         _reviewWindow.UpdateModel(modelItem.Label, modelItem.DataPath, modelItem.PoseLabels);
         _reviewWindow.ShowAndActivate();

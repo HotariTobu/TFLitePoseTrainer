@@ -61,11 +61,6 @@ internal class DataSource : SharedWPF.ViewModelBase
     public ObservableCollection<ModelItem> ModelItems { get; } = [];
 
     #endregion
-    #region == SelectedModelItems ==
-
-    public ObservableCollection<ModelItem> SelectedModelItems { get; } = [];
-
-    #endregion
     #region == IsEditingModels ==
 
     bool _isEditingModels;
@@ -86,4 +81,3 @@ internal class DataSource : SharedWPF.ViewModelBase
 }
 
 internal class PoseListBoxSelectionBehavior : Behaviors.ListBoxSelectionBehavior<PoseItem> { }
-internal class ModelListBoxSelectionBehavior : Behaviors.ListBoxSelectionBehavior<ModelItem> { }
