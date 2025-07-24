@@ -15,209 +15,244 @@
         <local_main:DataSource/>
     </Window.DataContext>
 
-    <ScrollViewer>
-        <StackPanel>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Style="{StaticResource HeaderStyle}">
-                    Poses
-                </TextBlock>
-                <StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom">
-                    <Button Content="➕"
-                            Click="OnAddPoseButtonClicked"/>
-                    <ToggleButton Content="✏️"
-                                  IsChecked="{Binding IsEditingPoses, Mode=TwoWay}"/>
-                </StackPanel>
-            </Grid>
+    <Grid>
+        <ScrollViewer>
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource HeaderStyle}">
+                        Poses
+                    </TextBlock>
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom">
+                        <Button Content="➕"
+                                Click="OnAddPoseButtonClicked"/>
+                        <ToggleButton Content="✏️"
+                                      IsChecked="{Binding IsEditingPoses, Mode=TwoWay}"/>
+                    </StackPanel>
+                </Grid>
 
-            <ListBox Style="{StaticResource PosesControlStyle}"
-                     ItemsSource="{Binding PoseItems}"
-                     SelectionMode="Multiple">
-                <b:Interaction.Behaviors>
-                    <local_main:PoseListBoxSelectionBehavior
-                        SelectedItems="{Binding SelectedPoseItems}" />
-                </b:Interaction.Behaviors>
+                <ListBox Style="{StaticResource PosesControlStyle}"
+                         ItemsSource="{Binding PoseItems}"
+                         SelectionMode="Multiple">
+                    <b:Interaction.Behaviors>
+                        <local_main:PoseListBoxSelectionBehavior
+                            SelectedItems="{Binding SelectedPoseItems}" />
+                    </b:Interaction.Behaviors>
 
-                <ListBox.Visibility>
-                    <Binding Path="IsEditingPoses">
-                        <Binding.Converter>
-                            <local_cv:ChainConverter>
-                                <local_cv:ChainConverter.Converters>
-                                    <local_cv:BooleanInverterConverter/>
-                                    <BooleanToVisibilityConverter/>
-                                </local_cv:ChainConverter.Converters>
-                            </local_cv:ChainConverter>
-                        </Binding.Converter>
-                    </Binding>
-                </ListBox.Visibility>
+                    <ListBox.Visibility>
+                        <Binding Path="IsEditingPoses">
+                            <Binding.Converter>
+                                <local_cv:ChainConverter>
+                                    <local_cv:ChainConverter.Converters>
+                                        <local_cv:BooleanInverterConverter/>
+                                        <BooleanToVisibilityConverter/>
+                                    </local_cv:ChainConverter.Converters>
+                                </local_cv:ChainConverter>
+                            </Binding.Converter>
+                        </Binding>
+                    </ListBox.Visibility>
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Image Grid.Row="0"
-                                    Source="{Binding ThumbnailSource}"
-                                    Stretch="Uniform"/>
-                            <TextBlock Grid.Row="1"
-                                       Text="{Binding Label}"
-                                       HorizontalAlignment="Center"
-                                       Padding="1"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <ItemsControl Style="{StaticResource PosesControlStyle}"
-                     ItemsSource="{Binding PoseItems}">
-                <ItemsControl.Visibility>
-                    <Binding Path="IsEditingPoses">
-                        <Binding.Converter>
-                            <BooleanToVisibilityConverter/>
-                        </Binding.Converter>
-                    </Binding>
-                </ItemsControl.Visibility>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Image Grid.Row="0"
+                                        Source="{Binding ThumbnailSource}"
+                                        Stretch="Uniform"/>
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding Label}"
+                                           HorizontalAlignment="Center"
+                                           Padding="1"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <ItemsControl Style="{StaticResource PosesControlStyle}"
+                         ItemsSource="{Binding PoseItems}">
+                    <ItemsControl.Visibility>
+                        <Binding Path="IsEditingPoses">
+                            <Binding.Converter>
+                                <BooleanToVisibilityConverter/>
+                            </Binding.Converter>
+                        </Binding>
+                    </ItemsControl.Visibility>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Margin="5,2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Image Grid.Row="0"
-                                    Source="{Binding ThumbnailSource}"
-                                    Stretch="Uniform"/>
-                            <Canvas Grid.Row="0">
-                                <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
-                                        Tag="{Binding}"
-                                        Click="OnDeletePoseButtonClicked"/>
-                            </Canvas>
-                            <TextBox Grid.Row="1"
-                                     Text="{Binding Label, Mode=TwoWay}"
-                                       HorizontalAlignment="Center"
-                                     MaxLength="16"/>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5,2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Image Grid.Row="0"
+                                        Source="{Binding ThumbnailSource}"
+                                        Stretch="Uniform"/>
+                                <Canvas Grid.Row="0">
+                                    <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
+                                            Tag="{Binding}"
+                                            Click="OnDeletePoseButtonClicked"/>
+                                </Canvas>
+                                <TextBox Grid.Row="1"
+                                         Text="{Binding Label, Mode=TwoWay}"
+                                           HorizontalAlignment="Center"
+                                         MaxLength="16"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Style="{StaticResource HeaderStyle}">
-                    Models
-                </TextBlock>
-                <StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom">
-                    <Button Content="👀"
-                            Click="OnReviewModelButtonClicked"/>
-                    <Button Content="➕"
-                            Click="OnAddModelButtonClicked">
-                    </Button>
-                    <ToggleButton Content="✏️"
-                                  IsChecked="{Binding IsEditingModels, Mode=TwoWay}"/>
-                </StackPanel>
-            </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource HeaderStyle}">
+                        Models
+                    </TextBlock>
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom">
+                        <Button Content="👀"
+                                Click="OnReviewModelButtonClicked"/>
+                        <Button Content="➕"
+                                Click="OnAddModelButtonClicked">
+                        </Button>
+                        <ToggleButton Content="✏️"
+                                      IsChecked="{Binding IsEditingModels, Mode=TwoWay}"/>
+                    </StackPanel>
+                </Grid>
 
 
-            <ItemsControl Style="{StaticResource ModelsControlStyle}"
-                     ItemsSource="{Binding TrainingModelItems}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <ProgressBar Style="{StaticResource ModelItemProgressBarStyle}"
-                                         Value="{Binding ProgressValue}"
-                                         Maximum="1">
-                                <ProgressBar.IsIndeterminate>
-                                    <Binding Path="ProgressValue">
-                                        <Binding.Converter>
-                                            <local_cv:IsZeroConverter/>
-                                        </Binding.Converter>
-                                    </Binding>
-                                </ProgressBar.IsIndeterminate>
-                            </ProgressBar>
-                            <TextBlock Text="{Binding Label}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       FontSize="20"
-                                       Padding="1"/>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                <ItemsControl Style="{StaticResource ModelsControlStyle}"
+                         ItemsSource="{Binding TrainingModelItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <ProgressBar Style="{StaticResource ModelItemProgressBarStyle}"
+                                             Value="{Binding ProgressValue}"
+                                             Maximum="1">
+                                    <ProgressBar.IsIndeterminate>
+                                        <Binding Path="ProgressValue">
+                                            <Binding.Converter>
+                                                <local_cv:IsZeroConverter/>
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </ProgressBar.IsIndeterminate>
+                                </ProgressBar>
+                                <TextBlock Text="{Binding Label}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="20"
+                                           Padding="1"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
-            <ListBox Style="{StaticResource ModelsControlStyle}"
-                     ItemsSource="{Binding ModelItems}">
-                <b:Interaction.Behaviors>
-                    <local_main:ModelListBoxSelectionBehavior
-                        SelectedItems="{Binding SelectedModelItems}" />
-                </b:Interaction.Behaviors>
+                <ListBox Style="{StaticResource ModelsControlStyle}"
+                         ItemsSource="{Binding ModelItems}">
+                    <b:Interaction.Behaviors>
+                        <local_main:ModelListBoxSelectionBehavior
+                            SelectedItems="{Binding SelectedModelItems}" />
+                    </b:Interaction.Behaviors>
 
-                <ListBox.Visibility>
-                    <Binding Path="IsEditingModels">
-                        <Binding.Converter>
-                            <local_cv:ChainConverter>
-                                <local_cv:ChainConverter.Converters>
-                                    <local_cv:BooleanInverterConverter/>
-                                    <BooleanToVisibilityConverter/>
-                                </local_cv:ChainConverter.Converters>
-                            </local_cv:ChainConverter>
-                        </Binding.Converter>
-                    </Binding>
-                </ListBox.Visibility>
+                    <ListBox.Visibility>
+                        <Binding Path="IsEditingModels">
+                            <Binding.Converter>
+                                <local_cv:ChainConverter>
+                                    <local_cv:ChainConverter.Converters>
+                                        <local_cv:BooleanInverterConverter/>
+                                        <BooleanToVisibilityConverter/>
+                                    </local_cv:ChainConverter.Converters>
+                                </local_cv:ChainConverter>
+                            </Binding.Converter>
+                        </Binding>
+                    </ListBox.Visibility>
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <TextBlock Text="{Binding Label}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       FontSize="20"
-                                       Padding="1"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <ItemsControl Style="{StaticResource ModelsControlStyle}"
-                     ItemsSource="{Binding ModelItems}">
-                <ItemsControl.Visibility>
-                    <Binding Path="IsEditingModels">
-                        <Binding.Converter>
-                            <BooleanToVisibilityConverter/>
-                        </Binding.Converter>
-                    </Binding>
-                </ItemsControl.Visibility>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock Text="{Binding Label}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="20"
+                                           Padding="1"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <ItemsControl Style="{StaticResource ModelsControlStyle}"
+                         ItemsSource="{Binding ModelItems}">
+                    <ItemsControl.Visibility>
+                        <Binding Path="IsEditingModels">
+                            <Binding.Converter>
+                                <BooleanToVisibilityConverter/>
+                            </Binding.Converter>
+                        </Binding>
+                    </ItemsControl.Visibility>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Margin="5,2">
-                            <Canvas>
-                                <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
-                                        Tag="{Binding}"
-                                        Click="OnDeleteModelButtonClicked"/>
-                            </Canvas>
-                            <TextBox Text="{Binding Label, Mode=TwoWay}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       FontSize="20"/>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>
-    </ScrollViewer>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5,2">
+                                <Canvas>
+                                    <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
+                                            Tag="{Binding}"
+                                            Click="OnDeleteModelButtonClicked"/>
+                                </Canvas>
+                                <TextBox Text="{Binding Label, Mode=TwoWay}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="20"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Background="{StaticResource LoadingOverlayBackground}">
+            <Border.Visibility>
+                <Binding Path="IsInitializing">
+                    <Binding.Converter>
+                        <BooleanToVisibilityConverter/>
+                    </Binding.Converter>
+                </Binding>
+            </Border.Visibility>
+            <Path Stroke="DodgerBlue"
+                    StrokeThickness="10"
+                    StrokeStartLineCap="Round"
+                    StrokeEndLineCap="Round"
+                    Data="M50,5 A40,40 0 1 1 5,50"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    RenderTransformOrigin="0.5,0.5">
+                <Path.RenderTransform>
+                    <RotateTransform/>
+                </Path.RenderTransform>
+                <Path.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="(FrameworkElement.RenderTransform).(RotateTransform.Angle)"
+                                    From="0" To="360" Duration="0:0:1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Path.Triggers>
+            </Path>
+        </Border>
+    </Grid>
 </Window>

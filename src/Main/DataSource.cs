@@ -4,6 +4,24 @@ namespace TFLitePoseTrainer.Main;
 
 internal class DataSource : SharedWPF.ViewModelBase
 {
+    #region == IsInitializing ==
+
+    bool _isInitializing;
+    public bool IsInitializing
+    {
+        get => _isInitializing;
+        set
+        {
+            if (_isInitializing != value)
+            {
+                _isInitializing = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
+    #endregion
+
     #region == PoseItems ==
 
     public ObservableCollection<PoseItem> PoseItems { get; } = [];

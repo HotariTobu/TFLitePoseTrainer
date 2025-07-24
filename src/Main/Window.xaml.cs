@@ -39,6 +39,8 @@ partial class Window : System.Windows.Window
 
     async void InitializeSubWindows()
     {
+        _dataSource.IsInitializing = true;
+
         await Task.WhenAll(WaitForConnection(), CheckRuntime(TrackerProcessingMode.GpuCuda));
 
         var (captureLoop, trackingLoop) = await CreateLoops();
@@ -47,6 +49,8 @@ partial class Window : System.Windows.Window
         _recordWindow.OnPoseRecorded += OnPoseRecorded;
 
         _reviewWindow = new(captureLoop, trackingLoop);
+
+        _dataSource.IsInitializing = false;
     }
 
     void OnAddPoseButtonClicked(object sender, RoutedEventArgs e)
