@@ -6,6 +6,12 @@ namespace TFLitePoseTrainer.Main;
 
 partial class Window
 {
+    static readonly string ModelLabelFormat = "Pose {0}";
+    static readonly Microsoft.Win32.OpenFolderDialog ExportModelDialog = new()
+    {
+        Title = "Export Model Data",
+    };
+
     async void InitializeModelItems()
     {
         var result = await Task.Run(ModelData.List);
@@ -91,6 +97,22 @@ partial class Window
 
         });
 
-        return $"Pose: {string.Join(", ", poseNames)}";
+        return string.Format(ModelLabelFormat, string.Join(", ", poseNames));
+    }
+
+    static void ExportModel(ModelItem modelItem)
+    {
+        ExportModelDialog.FolderName = modelItem.Label;
+
+        if (ExportModelDialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var result = modelItem.Export(ExportModelDialog.FolderName);
+        if (result.HasException)
+        {
+            throw new("Failed exporting model data", result.Exception);
+        }
     }
 }

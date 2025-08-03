@@ -31,4 +31,5 @@ class ModelItem(ModelData modelData) : SharedWPF.ViewModelBase
     #endregion
 
     public Result Delete() => modelData.Delete();
+    public Result Export(string destinationPath) => modelData.Export(destinationPath);
 }

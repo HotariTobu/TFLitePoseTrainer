@@ -100,6 +100,30 @@ class ModelData
         return modelData;
     }
 
+    internal Result Export(string destinationPath)
+    {
+        if (!Directory.Exists(destinationPath))
+        {
+            return new Exception($"Destination directory not found: {destinationPath}");
+        }
+
+        if (Directory.EnumerateFileSystemEntries(destinationPath).Any())
+        {
+            return new Exception($"Destination directory is not empty: {destinationPath}");
+        }
+
+        try
+        {
+            File.Copy(DataPath, DataPathFormat(destinationPath));
+            File.Copy(_poseLabelsPath, PoseLabelsPathFormat(destinationPath));
+            return Result.Success;
+        }
+        catch (Exception e)
+        {
+            return new Exception($"Failed exporting model data", e);
+        }
+    }
+
     internal static Result<IEnumerable<ModelData>> List()
     {
         try

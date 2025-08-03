@@ -183,6 +183,9 @@
                                             <Button Content="👀"
                                                     Tag="{Binding}"
                                                     Click="OnReviewModelButtonClicked"/>
+                                            <Button Content="📤"
+                                                    Tag="{Binding}"
+                                                    Click="OnExportModelButtonClicked"/>
                                         </StackPanel>
                                     </Canvas>
                                     <TextBlock Text="{Binding Label}"

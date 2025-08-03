@@ -104,6 +104,21 @@ partial class Window : System.Windows.Window
         _reviewWindow.ShowAndActivate();
     }
 
+    void OnExportModelButtonClicked(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement element)
+        {
+            return;
+        }
+
+        if (element.Tag is not ModelItem modelItem)
+        {
+            return;
+        }
+
+        ExportModel(modelItem);
+    }
+
     void OnAddModelButtonClicked(object sender, RoutedEventArgs e)
     {
         var selectedPoseItems = _dataSource.SelectedPoseItems.ToList();
