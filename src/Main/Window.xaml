@@ -32,8 +32,10 @@
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom">
                         <Button Content="➕"
+                                ToolTip="Add new pose"
                                 Click="OnAddPoseButtonClicked"/>
                         <ToggleButton Content="✏️"
+                                      ToolTip="Edit poses"
                                       IsChecked="{Binding IsEditingPoses, Mode=TwoWay}"/>
                     </StackPanel>
                 </Grid>
@@ -99,6 +101,7 @@
                                         Stretch="Uniform"/>
                                 <Canvas Grid.Row="0">
                                     <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
+                                            ToolTip="Delete pose"
                                             Tag="{Binding}"
                                             Click="OnDeletePoseButtonClicked"/>
                                 </Canvas>
@@ -125,9 +128,11 @@
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom">
                         <Button Content="➕"
+                                ToolTip="Add new model"
                                 Click="OnAddModelButtonClicked">
                         </Button>
                         <ToggleButton Content="✏️"
+                                      ToolTip="Edit models"
                                       IsChecked="{Binding IsEditingModels, Mode=TwoWay}"/>
                     </StackPanel>
                 </Grid>
@@ -181,9 +186,11 @@
                                     <Canvas>
                                         <StackPanel Canvas.Right="2" Canvas.Top="2" Orientation="Horizontal">
                                             <Button Content="👀"
+                                                    ToolTip="Review model"
                                                     Tag="{Binding}"
                                                     Click="OnReviewModelButtonClicked"/>
                                             <Button Content="📤"
+                                                    ToolTip="Export model"
                                                     Tag="{Binding}"
                                                     Click="OnExportModelButtonClicked"/>
                                         </StackPanel>
@@ -214,6 +221,7 @@
                                 <Grid>
                                     <Canvas>
                                         <Button Canvas.Right="2" Canvas.Top="2" Content="❌"
+                                                ToolTip="Delete model"
                                                 Tag="{Binding}"
                                                 Click="OnDeleteModelButtonClicked"/>
                                     </Canvas>
