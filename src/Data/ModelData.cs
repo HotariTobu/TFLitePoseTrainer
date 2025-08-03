@@ -9,6 +9,7 @@ class ModelData
     static string LabelPathFormat(string directoryPath) => Path.Join(directoryPath, "label.txt");
     static string DataPathFormat(string directoryPath) => Path.Join(directoryPath, "data");
     static string PoseLabelsPathFormat(string directoryPath) => Path.Join(directoryPath, "pose-labels.txt");
+    static string ExportedPoseLabelsPathFormat(string destinationPath) => Path.ChangeExtension(destinationPath, ".pose.txt");
 
     static ModelData()
     {
@@ -102,20 +103,10 @@ class ModelData
 
     internal Result Export(string destinationPath)
     {
-        if (!Directory.Exists(destinationPath))
-        {
-            return new Exception($"Destination directory not found: {destinationPath}");
-        }
-
-        if (Directory.EnumerateFileSystemEntries(destinationPath).Any())
-        {
-            return new Exception($"Destination directory is not empty: {destinationPath}");
-        }
-
         try
         {
-            File.Copy(DataPath, DataPathFormat(destinationPath));
-            File.Copy(_poseLabelsPath, PoseLabelsPathFormat(destinationPath));
+            File.Copy(DataPath, destinationPath);
+            File.Copy(_poseLabelsPath, ExportedPoseLabelsPathFormat(destinationPath));
             return Result.Success;
         }
         catch (Exception e)

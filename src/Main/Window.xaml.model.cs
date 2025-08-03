@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 
 using TFLitePoseTrainer.Data;
 
@@ -7,9 +8,11 @@ namespace TFLitePoseTrainer.Main;
 partial class Window
 {
     static readonly string ModelLabelFormat = "Pose {0}";
-    static readonly Microsoft.Win32.OpenFolderDialog ExportModelDialog = new()
+    static readonly Microsoft.Win32.SaveFileDialog ExportModelDialog = new()
     {
         Title = "Export Model Data",
+        Filter = "Model Data Files|*.tflite",
+        DefaultExt = ".tflite"
     };
 
     async void InitializeModelItems()
@@ -102,14 +105,14 @@ partial class Window
 
     static void ExportModel(ModelItem modelItem)
     {
-        ExportModelDialog.FolderName = modelItem.Label;
+        ExportModelDialog.FileName = modelItem.Label;
 
         if (ExportModelDialog.ShowDialog() != true)
         {
             return;
         }
 
-        var result = modelItem.Export(ExportModelDialog.FolderName);
+        var result = modelItem.Export(ExportModelDialog.FileName);
         if (result.HasException)
         {
             throw new("Failed exporting model data", result.Exception);
