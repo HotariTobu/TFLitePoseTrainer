@@ -1,9 +1,16 @@
-﻿using TFLitePoseTrainer.Data;
+﻿using System.Text.RegularExpressions;
+
+using TFLitePoseTrainer.Data;
 
 namespace TFLitePoseTrainer.Main;
 
 partial class Window
 {
+    static readonly string PoseLabelFormat = "Pose {0}";
+
+    [GeneratedRegex(@"Pose (\d+)")]
+    private static partial Regex PoseLabelRegex();
+
     async void InitializePoseItems()
     {
         var result = await Task.Run(PoseData.List);

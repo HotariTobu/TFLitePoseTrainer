@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Text.RegularExpressions;
 using System.Windows;
 
 using K4AdotNet.BodyTracking;
@@ -10,11 +9,6 @@ namespace TFLitePoseTrainer.Main;
 
 partial class Window : System.Windows.Window
 {
-    static readonly string PoseLabelFormat = "Pose {0}";
-
-    [GeneratedRegex(@"Pose (\d+)")]
-    private static partial Regex PoseLabelRegex();
-
     readonly DataSource _dataSource;
     Record.Window? _recordWindow;
     Review.Window? _reviewWindow;
