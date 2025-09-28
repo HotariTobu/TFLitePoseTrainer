@@ -9,6 +9,7 @@
         "femto",
         "k4adotnet",
         "keras",
+        "kinect",
         "numpy",
         "pyproject",
         "relu",
@@ -27,4 +28,5 @@
         "**/bin": true,
         "**/obj": true,
     },
+    "dotnet.defaultSolution": "TFLitePoseTrainer.sln",
 }

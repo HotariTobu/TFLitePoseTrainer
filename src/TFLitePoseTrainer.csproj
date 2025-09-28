@@ -18,12 +18,11 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-  <!-- <ItemGroup Condition="'$(Devices)' != 'Femto'">
+  <ItemGroup Condition="'$(Devices)' == 'Azure'">
     <PackageReference Include="K4AdotNet" Version="1.4.17" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Devices)' == 'Femto'"> -->
+  <ItemGroup Condition="'$(Devices)' != 'Azure'">
     <PackageReference Include="K4AdotNet-Femto" Version="1.4.17" />
   </ItemGroup>
 
