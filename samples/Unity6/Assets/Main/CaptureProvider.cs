@@ -1,37 +1,43 @@
-using System;
-
 using K4AdotNet.Sensor;
 
 using UnityEngine;
+using UnityEngine.Events;
 
 #nullable enable
 
 public class CaptureProvider : MonoBehaviour
 {
-    [SerializeField] int _deviceIndex = 0;
+    [SerializeField] protected int _deviceIndex = 0;
 
-    [SerializeField] DeviceConfiguration _deviceConfig = new()
+    [SerializeField]
+    protected DeviceConfiguration _deviceConfig = new()
     {
         CameraFps = FrameRate.Thirty,
         DepthMode = DepthMode.NarrowViewUnbinned,
         ColorResolution = ColorResolution.Off,
     };
 
-    public Calibration? Calibration { get; private set; }
-
-    public event Action<Capture>? CaptureReady;
+    [SerializeField] protected UnityEvent<Calibration> _onCalibrationReady = default!;
+    [SerializeField] protected UnityEvent<Capture> _onCaptureReady = default!;
 
     private Device? _device;
 
     void Awake()
     {
         _device = Device.Open(_deviceIndex);
-        Calibration = _device.GetCalibration(_deviceConfig.DepthMode, _deviceConfig.ColorResolution);
+
+        var calibration = _device.GetCalibration(_deviceConfig.DepthMode, _deviceConfig.ColorResolution);
+        _onCalibrationReady.Invoke(calibration);
     }
 
     void OnEnable()
     {
         _device?.StartCameras(_deviceConfig);
+    }
+
+    void OnDisable()
+    {
+        _device?.StopCameras();
     }
 
     void Update()
@@ -48,14 +54,9 @@ public class CaptureProvider : MonoBehaviour
         {
             using (capture)
             {
-                CaptureReady?.Invoke(capture);
+                _onCaptureReady.Invoke(capture);
             }
         }
-    }
-
-    void OnDisable()
-    {
-        _device?.StopCameras();
     }
 
     void OnDestroy()

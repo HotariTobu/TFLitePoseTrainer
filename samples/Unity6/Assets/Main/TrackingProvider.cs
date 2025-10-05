@@ -1,40 +1,30 @@
-using System;
-
 using K4AdotNet.Sensor;
 using K4AdotNet.BodyTracking;
 
 using UnityEngine;
+using UnityEngine.Events;
 
 #nullable enable
 
 public class TrackingProvider : MonoBehaviour
 {
-    [SerializeField] CaptureProvider? _captureProvider;
+    [SerializeField] protected TrackerConfiguration _trackerConfig = TrackerConfiguration.Default;
 
-    [SerializeField] TrackerConfiguration _trackerConfig = TrackerConfiguration.Default;
-
-    public event Action<BodyFrame>? BodyFrameReady;
+    [SerializeField] protected UnityEvent<BodyFrame> _onBodyFrameReady = default!;
 
     private Tracker? _tracker;
 
-    void Start()
+    public void InitializeWith(Calibration calibration)
     {
-        if (_captureProvider is null)
-        {
-            return;
-        }
-
-        var calibration = _captureProvider.Calibration;
-        if (calibration is null)
+        if (_tracker is not null)
         {
             return;
         }
 
         _tracker = new(calibration.Data, _trackerConfig);
-        _captureProvider.CaptureReady += OnCaptureReady;
     }
 
-    void OnCaptureReady(Capture capture)
+    public void EnqueueCapture(Capture capture)
     {
         if (_tracker is null)
         {
@@ -45,7 +35,7 @@ public class TrackingProvider : MonoBehaviour
         {
             _tracker.EnqueueCapture(capture);
         }
-        catch (Exception e)
+        catch (System.Exception e)
         {
             Debug.LogException(e);
         }
@@ -63,11 +53,9 @@ public class TrackingProvider : MonoBehaviour
 
         if (_tracker.TryPopResult(out var bodyFrame, timeout))
         {
-            Debug.Log(bodyFrame.BodyCount);
-
             using (bodyFrame)
             {
-                BodyFrameReady?.Invoke(bodyFrame);
+                _onBodyFrameReady.Invoke(bodyFrame);
             }
         }
     }
