@@ -28,7 +28,7 @@ namespace Assets.Main.Tracking
         {
             _device = Device.Open(_deviceIndex);
 
-            var calibration = _device.GetCalibration(_deviceConfig.DepthMode, _deviceConfig.ColorResolution);
+            _device.GetCalibration(_deviceConfig.DepthMode, _deviceConfig.ColorResolution, out var calibration);
             _onCalibrationReady.Invoke(calibration);
         }
 

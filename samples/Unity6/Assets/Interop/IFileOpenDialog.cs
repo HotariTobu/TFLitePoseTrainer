@@ -6,7 +6,7 @@ namespace Assets.Interop
     [ComImport]
     [Guid("42f85136-db7e-439c-85f1-e4075d135fc8")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IFileOpenDialog
+    public interface IFileOpenDialog
     {
         [PreserveSig]
         int Show(IntPtr parent);
@@ -31,5 +31,5 @@ namespace Assets.Interop
 
     [ComImport]
     [Guid("DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7")]
-    internal class FileOpenDialog { }
+    public class FileOpenDialog { }
 }

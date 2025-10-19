@@ -46,8 +46,8 @@ namespace Assets.Main.Rendering
                 var parentJoint = skeleton[parentJointType];
 
                 boneSpline.Knots = new[] {
-                new BezierKnot(childJoint.GetPos()),
-                new BezierKnot(parentJoint.GetPos())
+                new BezierKnot(childJoint.GetUnityPos()),
+                new BezierKnot(parentJoint.GetUnityPos())
             };
             }
         }

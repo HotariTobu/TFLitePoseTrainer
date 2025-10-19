@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Assets.Interop
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct COMDLG_FILTERSPEC
+    public struct COMDLG_FILTERSPEC
     {
         [MarshalAs(UnmanagedType.LPWStr)]
         public string pszName;
@@ -13,7 +13,7 @@ namespace Assets.Interop
     }
 
     [Flags]
-    internal enum FileOpenOptions : uint
+    public enum FileOpenOptions : uint
     {
         NoChangeDir = 0x00000008,
         FileMustExist = 0x00001000,

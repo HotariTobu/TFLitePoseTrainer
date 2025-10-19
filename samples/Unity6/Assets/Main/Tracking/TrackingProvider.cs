@@ -23,7 +23,7 @@ namespace Assets.Main.Tracking
                 return;
             }
 
-            _tracker = new(calibration.Data, _trackerConfig);
+            _tracker = new(calibration, _trackerConfig);
         }
 
         public void EnqueueCapture(Capture capture)
@@ -33,14 +33,10 @@ namespace Assets.Main.Tracking
                 return;
             }
 
-            try
-            {
-                _tracker.EnqueueCapture(capture);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
+            var deltaTime = Time.deltaTime * 1000;
+            var timeout = new K4AdotNet.Timeout((int)deltaTime);
+
+            _tracker.TryEnqueueCapture(capture, timeout);
         }
 
         void Update()

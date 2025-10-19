@@ -7,6 +7,8 @@ namespace Assets.Main.UI
 {
     public class UIEventHandler : MonoBehaviour
     {
+        private static readonly FileOpenDialog.FileType[] FileTypes = { new("Pose Model File", "*.tflite") };
+
         [SerializeField] protected UnityEvent<string> _onModelFilePathSelected = default!;
 
         private FileOpenDialog? _fileOpenDialog;
@@ -14,6 +16,7 @@ namespace Assets.Main.UI
         void Awake()
         {
             _fileOpenDialog = new FileOpenDialog();
+            _fileOpenDialog.SetFileTypes(FileTypes);
         }
 
         void OnDestroy()
