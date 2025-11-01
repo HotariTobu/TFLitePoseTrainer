@@ -4,6 +4,7 @@ using System.Windows;
 using K4AdotNet.BodyTracking;
 
 using TFLitePoseTrainer.Data;
+using TFLitePoseTrainer.Loops;
 
 namespace TFLitePoseTrainer.Main;
 
@@ -12,6 +13,9 @@ partial class Window : System.Windows.Window
     readonly DataSource _dataSource;
     Record.Window? _recordWindow;
     Review.Window? _reviewWindow;
+
+    CaptureLoop? _captureLoop;
+    TrackingLoop? _trackingLoop;
 
     internal Window()
     {
@@ -31,18 +35,26 @@ partial class Window : System.Windows.Window
         _reviewWindow?.CloseWithoutHiding();
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+
+        _captureLoop?.Dispose();
+        _trackingLoop?.Dispose();
+    }
+
     async void InitializeSubWindows()
     {
         _dataSource.IsInitializing = true;
 
         await Task.WhenAll(WaitForConnection(), CheckRuntime(TrackerProcessingMode.GpuCuda));
 
-        var (captureLoop, trackingLoop) = await CreateLoops();
+        (_captureLoop, _trackingLoop) = await CreateLoops();
 
-        _recordWindow = new(captureLoop, trackingLoop);
+        _recordWindow = new(_captureLoop, _trackingLoop);
         _recordWindow.OnPoseRecorded += OnPoseRecorded;
 
-        _reviewWindow = new(captureLoop, trackingLoop);
+        _reviewWindow = new(_captureLoop, _trackingLoop);
 
         _dataSource.IsInitializing = false;
     }
