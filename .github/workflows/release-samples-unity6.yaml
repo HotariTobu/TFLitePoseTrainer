@@ -30,7 +30,9 @@ jobs:
     - name: 🤡 Fix Scripting Define Symbols
       env:
         DEVICE_TYPE: ${{ matrix.device-type }}
-      run: sed -i "s/DEVICE_TYPE_SYMBOL_PLACEHOLDER/${DEVICE_TYPE^^}/g" "samples/Unity6/ProjectSettings/ProjectSettings.asset"
+      run: |
+        sed -i "s/DEVICE_TYPE_SYMBOL_PLACEHOLDER/${DEVICE_TYPE^^}/g" "samples/Unity6/ProjectSettings/ProjectSettings.asset"
+        cat "samples/Unity6/ProjectSettings/ProjectSettings.asset"
 
     - name: 💀 Hide Git Changes
       run: git update-index --assume-unchanged "samples/Unity6/ProjectSettings/ProjectSettings.asset"
@@ -59,7 +61,8 @@ jobs:
         buildName: 'Unity6-win-x64-${{ matrix.device-type }}'
 
     - name: 📁 Archive Release Artifacts
-      run: zip -qq -r ${{ env.ARTIFACT_NAME }}.zip Dest/StandaloneWindows64
+      working-directory: ${{ github.workspace }}/Dest/StandaloneWindows64
+      run: zip -r ${{ github.workspace }}/${{ env.ARTIFACT_NAME }}.zip ./* -x "*DoNotShip*"
 
     - name: 🚀 Create GitHub Release
       uses: softprops/action-gh-release@v2

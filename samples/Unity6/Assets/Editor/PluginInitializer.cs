@@ -5,7 +5,7 @@ namespace Assets.Editor
     static class PluginInitializer
     {
         [InitializeOnLoadMethod]
-        static void Initialize()
+        internal static void Initialize()
         {
             var importers = PluginImporter.GetAllImporters();
             K4AdotNetBackendSelector.UpdateImporters(importers);
