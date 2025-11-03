@@ -10,7 +10,7 @@ namespace Assets.Editor
         static readonly Regex K4A_PATH_REGEX = new(@"K4AdotNet(?:-(?<device_type>\w+))?");
 
 #if AZURE
-    const DeviceType SELECTED_DEVICE_TYPE = DeviceType.Azure;
+        const DeviceType SELECTED_DEVICE_TYPE = DeviceType.Azure;
 #else
         const DeviceType SELECTED_DEVICE_TYPE = DeviceType.Femto;
 #endif
