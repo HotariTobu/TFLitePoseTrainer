@@ -1,0 +1,68 @@
+name: Release Samples Unity6
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+env:
+  PROJECT_PATH: samples/Unity6
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    strategy:
+      matrix:
+        device-type: [azure, femto]
+
+    runs-on: ubuntu-latest
+
+    env:
+      ARTIFACT_NAME: 'TFLitePoseTrainer-samples-unity6-${{ github.ref_name }}-win-x64-${{ matrix.device-type }}'
+
+    steps:
+    - name: ⬇️ Checkout Repository
+      uses: actions/checkout@v5
+
+    - name: 🤡 Fix Scripting Define Symbols
+      env:
+        DEVICE_TYPE: ${{ matrix.device-type }}
+      run: sed -i "s/DEVICE_TYPE_SYMBOL_PLACEHOLDER/${DEVICE_TYPE^^}/g" "samples/Unity6/ProjectSettings/ProjectSettings.asset"
+
+    - name: 💀 Hide Git Changes
+      run: git update-index --assume-unchanged "samples/Unity6/ProjectSettings/ProjectSettings.asset"
+
+    - name: ⚙️ Setup .NET Core
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '7.0.x'
+
+    - name: 🪛 Install NuGetForUnity CLI Tool
+      run: dotnet tool install -g NuGetForUnity.Cli
+
+    - name: 📦 Restore NuGet Packages
+      run: nugetforunity restore ${{ env.PROJECT_PATH }}
+
+    - name: 🎮 Setup Unity and Build
+      uses: game-ci/unity-builder@v4
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        projectPath: ${{ env.PROJECT_PATH }}
+        buildsPath: Dest
+        targetPlatform: StandaloneWindows64
+        buildName: 'Unity6-win-x64-${{ matrix.device-type }}'
+
+    - name: 📁 Archive Release Artifacts
+      run: zip -qq -r ${{ env.ARTIFACT_NAME }}.zip Dest/StandaloneWindows64
+
+    - name: 🚀 Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ env.ARTIFACT_NAME }}.zip
+        generate_release_notes: true
