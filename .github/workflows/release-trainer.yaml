@@ -1,0 +1,46 @@
+name: Release Trainer
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+env:
+  SOLUTION_PATH: 'TFLitePoseTrainer.sln'
+  PROJECT_PATH: 'src\TFLitePoseTrainer.csproj'
+  DOTNET_VERSION: '9.0.x'
+
+jobs:
+  build-and-release:
+    strategy:
+      matrix:
+        device-type: [Azure, Femto]
+
+    runs-on: windows-latest
+
+    env:
+      ARTIFACT_NAME: 'TFLitePoseTrainer-win-x64-${{ github.ref_name }}-${{ matrix.device-type }}'
+
+    steps:
+    - name: ⬇️ Checkout Repository
+      uses: actions/checkout@v5
+
+    - name: ⚙️ Setup .NET Core
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 🛠️ Publish WPF Application
+      run: dotnet publish ${{ env.PROJECT_PATH }} -c Release --no-self-contained -o Dest
+
+    - name: 📁 Archive Release Artifacts
+    - uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r ${{ env.ARTIFACT_NAME }}.zip dest
+
+    - name: 🚀 Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ env.ARTIFACT_NAME }}.zip
+        generate_release_notes: true
