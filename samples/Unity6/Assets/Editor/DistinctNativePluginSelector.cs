@@ -12,7 +12,7 @@ namespace Assets.Editor
 
         internal static void UpdateImporters(IEnumerable<PluginImporter> importers)
         {
-            var pluginFilenameSet = new HashSet<string>();
+            var pluginKeySet = new HashSet<(PluginImporterExtension.BuildArchitecture?, string filename)>();
 
             foreach (var importer in importers)
             {
@@ -26,14 +26,19 @@ namespace Assets.Editor
                     continue;
                 }
 
+                var buildArchitecture = importer.GetBuildArchitecture();
                 var pluginFilename = Path.GetFileName(importer.assetPath);
-                if (!pluginFilenameSet.Contains(pluginFilename))
+
+                var pluginKey = (buildArchitecture, pluginFilename);
+                if (!pluginKeySet.Contains(pluginKey))
                 {
-                    pluginFilenameSet.Add(pluginFilename);
+                    pluginKeySet.Add(pluginKey);
                     continue;
                 }
 
                 importer.SetEnabled(false);
+
+                importer.SaveAndReimport();
             }
         }
     }
