@@ -34,15 +34,15 @@ namespace Assets.Editor
             var buildArchitecture = importer.GetBuildArchitecture();
             if (!buildArchitecture.HasValue)
             {
-                return false;
+                return importer.GetCompatibleWithPlatform(BuildTarget.StandaloneWindows) ||
+                       importer.GetCompatibleWithPlatform(BuildTarget.StandaloneWindows64);
             }
 
             return buildArchitecture.Value switch
             {
                 BuildArchitecture.X86 => importer.GetCompatibleWithPlatform(BuildTarget.StandaloneWindows),
                 BuildArchitecture.X64 => importer.GetCompatibleWithPlatform(BuildTarget.StandaloneWindows64),
-                _ => importer.GetCompatibleWithPlatform(BuildTarget.StandaloneWindows) &&
-                     importer.GetCompatibleWithPlatform(BuildTarget.StandaloneWindows64),
+                _ => false,
             };
         }
 
@@ -54,6 +54,8 @@ namespace Assets.Editor
             var buildArchitecture = importer.GetBuildArchitecture();
             if (!buildArchitecture.HasValue)
             {
+                importer.SetCompatibleWithPlatform(BuildTarget.StandaloneWindows, enabled);
+                importer.SetCompatibleWithPlatform(BuildTarget.StandaloneWindows64, enabled);
                 return;
             }
 
@@ -63,10 +65,6 @@ namespace Assets.Editor
                     importer.SetCompatibleWithPlatform(BuildTarget.StandaloneWindows, enabled);
                     break;
                 case BuildArchitecture.X64:
-                    importer.SetCompatibleWithPlatform(BuildTarget.StandaloneWindows64, enabled);
-                    break;
-                default:
-                    importer.SetCompatibleWithPlatform(BuildTarget.StandaloneWindows, enabled);
                     importer.SetCompatibleWithPlatform(BuildTarget.StandaloneWindows64, enabled);
                     break;
             }
