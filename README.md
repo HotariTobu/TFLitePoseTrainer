@@ -59,3 +59,17 @@ Then, pose labels are displayed.
 ## Samples
 
 [/samples](samples) contains sample projects to load created models and classify poses.
+
+## Development
+
+Also [.NET SDK](https://dotnet.microsoft.com/) is need.
+
+### Run
+
+```sh
+dotnet run --project src
+```
+
+### Azure
+
+Add an option `-p:DeviceType=azure` to the run command if you want to use an Azure device.
