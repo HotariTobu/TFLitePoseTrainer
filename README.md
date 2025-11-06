@@ -9,6 +9,8 @@ You can classify poses with the created models.
 
 - Windows
 - [Azure Kinect Body Tracking SDK](https://learn.microsoft.com/azure/kinect-dk/body-sdk-download)
+- [Compatible Graphic Card](https://developer.nvidia.com/cuda-gpus) (maybe CC >= 6)
+  - You don't have to despair if you don't have this. Body tracking may work if you change `TrackerProcessingMode`.
 
 ## Usage
 
