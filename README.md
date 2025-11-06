@@ -17,18 +17,27 @@ You can classify poses with the created models.
 First, record several poses to be classified.
 
 1. Open Record Window
+  ![](images/open-record-window.gif)
+
 1. Click to Start Recording
+  ![](images/start-recording.gif)
+
 1. Stay still (but tiny moves are considered good for robustness)
+  ![](images/stay-still.gif)
 
 Then, a pose item is added.
 Repeat these steps.
+You might want to edit the label and rename pose items.
 
 ### Create Models
 
 After adding enough pose items, create a model to classify poses.
 
 1. Select Recorded Pose Items
+  ![](images/select-pose.gif)
+
 1. Train a Model
+  ![](images/train-model.gif)
 
 Then, a model item is added.
 Press export button to save the created model to your desired location.
@@ -38,7 +47,10 @@ Press export button to save the created model to your desired location.
 You can also review how the created model works.
 
 1. Open Review Window
+  ![](images/open-review-window.gif)
+
 1. Move Your Body
+  ![](images/move-body.gif)
 
 Then, pose labels are displayed.
 
