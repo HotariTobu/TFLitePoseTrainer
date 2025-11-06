@@ -1,12 +1,8 @@
 # Unity6 Sample | TFLitePoseTrainer
 
-## Requirements
+## Usage
 
-- Windows
-- [Azure Kinect Body Tracking SDK](https://learn.microsoft.com/azure/kinect-dk/body-sdk-download)
+1. Open Model File
+1. Move Your Body
 
-## Setup
-
-NuGet -> Restore Packages
-
-![]()
+![](move-body.gif)
